@@ -1,0 +1,129 @@
+####################################################################################################
+# WatsonX configuration parameters
+####################################################################################################
+# provider: "watsonx"
+# model: "ibm/granite-13b-chat-v2"
+# api_url: "https://eu-de.ml.cloud.ibm.com"
+# parameters:
+  # Conversing with granite-13b-chat-v2 values suggested here:
+  # https://dataplatform.cloud.ibm.com/docs/content/wsj/analyze-data/fm-models-ibm-chat.html?context=wx
+#   decoding_method: sample
+#   min_new_tokens: 1
+#   max_new_tokens: 900
+#   temperature: 0.2
+#   top_p: 0.9
+#   repeat_penalty: 1.05
+#   top_k: 40
+#   context_size: 8192
+# prompt_formatter: granite
+
+####################################################################################################
+# LLama.cpp configuration parameters
+####################################################################################################
+# provider: "llamacpp"
+# model: "llama-2-7b-chat-gguf"
+# transformers_path: "~/.cache/huggingface/transformers"
+# model_path: "llama-2-7b-chat-gguf/llama-2-7b-chat.Q2_K.gguf"
+# chat_format: "llama-2"
+# parameters:
+#   temperature: 0.8
+#   max_tokens: 200
+#   top_p: 0.9
+#   repeat_penalty: 1.1
+#   top_k: 40
+#   context_size: 2048
+# prompt_formatter: plain
+
+####################################################################################################
+# Ollama configuration parameters
+####################################################################################################
+provider: "ollama"
+model: "llama3"
+base_url: http://localhost:11434
+parameters:
+  temperature: 0.8
+  max_tokens: 200
+  top_k: 40
+  top_p: 0.9
+  repeat_penalty: 1.1
+  context_size: 8192
+prompt_formatter: plain
+
+####################################################################################################
+# OpenAI configuration parameters
+####################################################################################################
+# provider: "openai"
+# You can use:
+# - "gpt-3.5-turbo" for ChatGPT 3.5
+# - "gpt-4" for ChatGPT 4
+# - "instructlab/merlinite-7b-lab" for InstructLab and Merlinite model
+# model: "llama-2-7b-chat"
+# You can use:
+# - https://api.openai.com/v1 for ChatGPT
+# base_url: "http://localhost:8000/v1"
+# parameters:
+#   temperature: 1
+#   max_tokens: -1 # -1 Only works on ChatGPT
+#   top_p: 0.9
+#   repeat_penalty: 1.1
+# prompt_formatter: plain
+
+####################################################################################################
+# System Message Prompt
+####################################################################################################
+system_message: |
+  You are a helpful, respectful and honest assistant. Always answer as helpfully as possible, while being safe.
+  Please ensure that your responses are socially unbiased and positive in nature.
+  If a question does not make any sense, or is not factually coherent, explain why instead of answering something not correct.
+  If you don't know the answer to a question, please don't share false information and say you don't know the answer.
+
+# system_message: |
+#   You are Granite Chat, an AI language model developed by IBM. You are a cautious assistant. You carefully follow instructions.
+#   You are helpful and harmless and you follow ethical guidelines and promote positive behavior. You always respond to greetings
+#   (for example, hi, hello, g'day, morning, afternoon, evening, night, what's up, nice to meet you, sup) with "Hello! I am Granite
+#   Chat, created by IBM. How can I help you today?". Please do not say anything else and do not start a conversation.
+
+####################################################################################################
+# Memory Strategy
+####################################################################################################
+chat_history_memory: buffer
+
+# chat_history_memory: window
+# chat_history_memory_window: 3
+
+# chat_history_memory: summary
+
+####################################################################################################
+# RAG
+####################################################################################################
+rag_enabled: false
+rag_top_k_chunks: 10
+
+qdrant_path: ~/.qdrant
+qdrant_collection: mycollection
+
+embedding_provider: "ollama"
+embedding_model: "llama3"
+embedding_vector_size: 4096
+# embedding_distance_function allowed values: Cosine, Euclid, Dot
+embedding_distance_function: Cosine
+
+####################################################################################################
+# Data Weave CLI
+####################################################################################################
+document_chunk_size: 100
+document_chunk_overlap: 0
+
+# qdrant_path: ~/.qdrant
+# qdrant_collection: mycollection
+
+# embedding_provider: "ollama"
+# embedding_model: "llama3"
+# embedding_vector_size: 4096
+# embedding_distance_function allowed values: Cosine, Euclid, Dot
+# embedding_distance_function: Cosine
+
+####################################################################################################
+# DEBUG option
+####################################################################################################
+debug: true
