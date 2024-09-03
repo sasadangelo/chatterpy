@@ -2,7 +2,7 @@
 
 ## What is ChatterPy?
 
-ChatterPy is a multi-model and multi-provider chatbot with RAG (Retrieval-Augmented Generation) written in Python and LangChain. It is an evolution of my [ChatPDF](https://github.com/sasadangelo/chatpdf) project and consists of two main components:
+ChatterPy is a multi-model and multi-provider chatbot with Retrieval-Augmented Generation (RAG) written in Python and LangChain. It is an evolution of my [ChatPDF](https://github.com/sasadangelo/chatpdf) project and consists of two main components:
 
 * **ChatterPy**: The actual chatbot.
 * **DataWaeve CLI**: A command-line interface for scraping data from various sources (e.g., PDFs, Wikipedia) and storing it in a vector store.
