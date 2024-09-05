@@ -11,14 +11,20 @@ ChatterPy can be run in text or GUI mode, while DataWaeve CLI is available only 
 
 ## Prerequisites
 
-ChatterPy is a multi-provider and multi-model chatbot, so the prerequisites depend on the provider or model you choose to activate. By default, ChatterPy uses the Ollama provider with the LLama3 model. To get started, install the Ollama CLI on your machine by downloading it from [here](https://github.com/ollama/ollama). After installation, you can download the LLama3 model with the following command:
+ChatterPy is a multi-provider and multi-model chatbot, so the prerequisites depend on the provider or model you choose to activate. By default, ChatterPy uses the Ollama provider with the LLama3 model. To get started, install the Ollama CLI on your machine by downloading it from [here](https://github.com/ollama/ollama). After installation, you can start the ollama server with the command:
+```
+ollama serve
+```
+
+In another terminal:
+- you should download the LLM **llama3** model in the `~/.ollama` folder:
 ```
 ollama pull llama3
 ```
 
-Once downloaded, you need to serve the model with this command:
+- you can list the downloaded model using the commands:
 ```
-ollama serve
+ollama list
 ```
 
 ChatterPy also supports the following providers:
