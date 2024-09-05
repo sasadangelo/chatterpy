@@ -1,2 +1,2 @@
 class EmbeddingProvider:
-  pass
+    pass

@@ -7,6 +7,7 @@
 #
 # SPDX-License-Identifier: MIT
 
+
 # This class represents a generic application page. All the application pages must
 # derive from this class and implement the render method.
 class Page:

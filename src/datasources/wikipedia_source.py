@@ -2,6 +2,7 @@ import wikipediaapi
 from urllib.parse import urlparse, parse_qs
 from datasources.data_source import Source
 
+
 class WikipediaSource(Source):
     def __init__(self, source):
         self.source = source
@@ -11,8 +12,8 @@ class WikipediaSource(Source):
         # Extract the page title from the Wikipedia URL
         parsed_url = urlparse(self.source)
         path = parsed_url.path
-        if path.startswith('/wiki/'):
-            return path[len('/wiki/'):]
+        if path.startswith("/wiki/"):
+            return path[len("/wiki/") :]
         else:
             raise ValueError("The URL does not seem to be a valid Wikipedia URL.")
 

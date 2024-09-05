@@ -3,18 +3,19 @@ import os
 from datasources.data_source import Source
 from langchain_community.document_loaders import PyPDFLoader
 
+
 class PDFSource(Source):
     def __init__(self, source):
         self.source = source
         self.pages = []
 
     def load_data(self):
-        if os.path.isfile(self.source) and self.source.endswith('.pdf'):
+        if os.path.isfile(self.source) and self.source.endswith(".pdf"):
             loader = PyPDFLoader(self.source)
             self.pages = loader.load()
             print(f"Loaded {len(self.pages)} pages from file: {self.source}")
         elif os.path.isdir(self.source):
-            pdf_files = [f for f in os.listdir(self.source) if f.endswith('.pdf')]
+            pdf_files = [f for f in os.listdir(self.source) if f.endswith(".pdf")]
             if not pdf_files:
                 print(f"No PDF files found in directory: {self.source}")
 

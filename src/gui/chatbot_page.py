@@ -7,10 +7,12 @@
 #
 # SPDX-License-Identifier: MIT
 import streamlit as st
-from langchain.schema import (HumanMessage, AIMessage)
-#from src.models.base_model import Model
+from langchain.schema import HumanMessage, AIMessage
+
+# from src.models.base_model import Model
 from gui.page import Page
 from chatbot.chatbot import ChatBOT
+
 
 # This class is responsible for displaying the ChatBOT page using Streamlit.
 class ChatBotPage(Page):
@@ -41,9 +43,7 @@ class ChatBotPage(Page):
 
     # Initialize the ChatBOT page
     def __init_page(self) -> None:
-        st.set_page_config(
-            page_title="ChatterPy"
-        )
+        st.set_page_config(page_title="ChatterPy")
         st.header("ChatterPy")
         chatbot = None
         if "chatbot" not in st.session_state:

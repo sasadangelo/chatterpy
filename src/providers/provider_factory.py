@@ -3,12 +3,13 @@ from providers.ollama_provider import OllamaProvider
 from providers.llamacpp_provider import LLamaCppProvider
 from providers.openai_provider import OpenAIProvider
 
+
 class LLMProviderFactory:
     providers = {
         "llamacpp": LLamaCppProvider,
         "ollama": OllamaProvider,
         "openai": OpenAIProvider,
-        "watsonx": WatsonXProvider
+        "watsonx": WatsonXProvider,
     }
 
     # The single provider instance
@@ -21,7 +22,7 @@ class LLMProviderFactory:
             return cls._instance
 
         # Otherwise, create it
-        provider_name = config['provider']
+        provider_name = config["provider"]
         provider_class = cls.providers.get(provider_name)
         if not provider_class:
             raise ValueError(f"Unsupported provider: {provider_name}")
