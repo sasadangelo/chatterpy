@@ -1,5 +1,5 @@
 import wikipediaapi
-from urllib.parse import urlparse, parse_qs
+from urllib.parse import urlparse
 from datasources.data_source import Source
 
 
