@@ -1,13 +1,13 @@
 import os
 from dotenv import load_dotenv
 from github import Github, Issue, IssueComment, BadCredentialsException, UnknownObjectException
-import traceback
 
 class GitHub:
     _instance = None
 
     def __new__(cls):
         if cls._instance is None:
+            load_dotenv(".env")
             cls._instance = super(GitHub, cls).__new__(cls)
             github_token = os.environ['GITHUB_TOKEN']
             cls._instance.github_client = Github(github_token)
@@ -27,10 +27,15 @@ class GitHub:
         repo = self.__get_repository(repo_name)
         return repo.get_issue(number=issue_id)
 
-    def update_issue_status(self, repo_name: str, issue_id: int, action: str) -> Issue:
+    def get_issues_by_assignee(self, repo_name: str, assignee: str) -> Issue:
+        repo = self.__get_repository(repo_name)
+        issues_list_paged = repo.get_issues(assignee=assignee)
+        return list(issues_list_paged)
+
+    def update_issue_status(self, repo_name: str, issue_id: int, status: str) -> Issue:
         repo = self.__get_repository(repo_name)
         issue = repo.get_issue(number=issue_id)
-        issue.edit(state=action)
+        issue.edit(state=status)
         return issue
 
     def update_issue_assignee(self, repo_name: str, issue_id: int, new_assignee: str) -> Issue:
@@ -102,11 +107,13 @@ def main():
         # comment = git.add_comment(repo_name="sasadangelo/chess", issue_id=1, comment="This is a new comment")
         # comments = git.get_comments_by_page(repo_name="sasadangelo/chess", issue_id=1)
         #print(comments)
-        comment = git.get_comment(repo_name="sasadangelo/chess", issue_id=1, page=2, position=0)
-        print(comment)
+        #comment = git.get_comment(repo_name="sasadangelo/chess", issue_id=1, page=2, position=0)
+        #print(comment)
         #comment = git.update_comment(repo_name="sasadangelo/chess", issue_id=1, page=1, position=0, new_body="Updated comment text 222")
         #print(comment)
         #git.delete_comment(repo_name="sasadangelo/chess", issue_id=1, page=1, position=0)
+        issue_list=git.get_issues_by_assignee(repo_name="sasadangelo/chattery_issue", assignee="sasadangelo")
+        print(issue_list)
     except BadCredentialsException as e:
         print(f"Bad token credentials. Make sure you have the GITHUB_TOKEN variable defined in the .env file.")
     except UnknownObjectException as e:
@@ -116,7 +123,7 @@ def main():
         print(f"Si è verificata un'eccezione: {e}")
         print(f"Tipo di eccezione: {type(e).__name__}")
         # Stampa il traceback per ulteriori dettagli
-        traceback.print_exc()    # Example usage:
+        #traceback.print_exc()    # Example usage:
 
 if __name__ == "__main__":
     main()
