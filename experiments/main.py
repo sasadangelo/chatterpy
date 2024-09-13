@@ -3,7 +3,7 @@ from langchain.agents import create_react_agent, AgentExecutor
 from langchain_ollama import ChatOllama
 from dotenv import load_dotenv
 from langchain.prompts import PromptTemplate
-from github_tools import github_tools
+# from github_tools import github_tools
 from github_facade import GitHub
 from langchain.tools import tool
 from github import GithubException
@@ -15,7 +15,7 @@ def parse_params(args: str) -> str:
     print("ARGS:", args)
     cleaned_args = args.replace('"', '').replace("'", "")
     print("CLEANED ARGS:", cleaned_args)
-    params = [param.strip() for param in cleaned_args.split(',') if param.strip()]
+    params = [param.strip() for param in cleaned_args.split('|') if param.strip()]
     return params
 
 
@@ -348,7 +348,7 @@ def update_github_issue_title(args: str) -> str:
     issue = github_client.update_issue_title(repo_name=repo_name, issue_id=issue_id, new_title=title)
     return f"Title of the github issue successfully updated: {issue.html_url}"
 
-github_tools=[create_github_issue, get_github_issue, update_github_issue_status, update_github_issue_assignee, update_github_issue_body, update_github_issue_title, get_github_issues_by_assignee]
+github_issues_tools=[create_github_issue, get_github_issue, update_github_issue_status, update_github_issue_assignee, update_github_issue_body, update_github_issue_title, get_github_issues_by_assignee]
 
 model_name = "llama3"
 base_url = "http://localhost:11434"
@@ -362,7 +362,7 @@ Use the following format:
 Question: the input question you must answer
 Thought: you should always think about what to do
 Action: the action to take, should be one of [{tool_names}]
-Action Input: the input to the action. Remember that comma is a keyword and must be used to separate the parameters.
+Action Input: the input to the action. Use the character "|" to separate the parameters.
 Observation: the result of the action
 ... (this Thought/Action/Action Input/Observation can repeat N times)
 Thought: I now know the final answer
@@ -418,8 +418,8 @@ try:
         messages.append(user_message)
 
         prompt_template = get_react_prompt_template()
-        agent = create_react_agent(llm, github_tools, prompt_template)
-        agent_executor = AgentExecutor(agent=agent, tools=github_tools, verbose=True, handle_parsing_errors=True)
+        agent = create_react_agent(llm, github_issues_tools, prompt_template)
+        agent_executor = AgentExecutor(agent=agent, tools=github_issues_tools, verbose=True, handle_parsing_errors=True, max_iterations=5)
         ai_response = agent_executor.invoke({"input": query})
 
         # Add the AI reply to the conversation

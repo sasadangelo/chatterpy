@@ -1,7 +1,7 @@
 
-from langchain.tools import tool
 from github_facade import GitHub
 from github import GithubException
+from langchain.tools import tool
 
 # Create an instance of the GitHub class
 github_client = GitHub()
@@ -10,7 +10,7 @@ def parse_params(args: str) -> str:
     print("ARGS:", args)
     cleaned_args = args.replace('"', '').replace("'", "")
     print("CLEANED ARGS:", cleaned_args)
-    params = [param.strip() for param in cleaned_args.split(',') if param.strip()]
+    params = [param.strip() for param in cleaned_args.split('|') if param.strip()]
     return params
 
 
@@ -343,4 +343,4 @@ def update_github_issue_title(args: str) -> str:
     issue = github_client.update_issue_title(repo_name=repo_name, issue_id=issue_id, new_title=title)
     return f"Title of the github issue successfully updated: {issue.html_url}"
 
-github_tools=[create_github_issue, get_github_issue, update_github_issue_status, update_github_issue_assignee, update_github_issue_body, update_github_issue_title, get_github_issues_by_assignee]
+github_issues_tools=[create_github_issue, get_github_issue, update_github_issue_status, update_github_issue_assignee, update_github_issue_body, update_github_issue_title, get_github_issues_by_assignee]
