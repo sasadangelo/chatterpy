@@ -5,12 +5,13 @@ from github_facade import GitHub
 from github import GithubException
 from langchain.tools import tool
 
-model_name = "llama3"
+model_name = "llama3.1"
 base_url = "http://localhost:11434"
 
 load_dotenv(".env")
 # Inizializza il modello OpenAI
 llm = ChatOllama(model=model_name, base_url=base_url)
+llm.bind(stop=["\nFinal Answer"])
 
 system_message = """
     You are a helpful, respectful and honest assistant. Always answer as helpfully as possible, while being safe.

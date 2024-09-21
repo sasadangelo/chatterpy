@@ -25,7 +25,7 @@ class GitHub:
 
     def create_issue(self, repo_name: str, title: str, body: str, assignee: str, label: str) -> List[Issue]:
         repo = self.__get_repository(repo_name)
-        return repo.create_issue(title=title, body=body, assignee=assignee, label=[label])
+        return repo.create_issue(title=title, body=body, assignee=assignee, labels=[label])
 
     def get_issue(self, repo_name: str, issue_id: int) -> Issue:
         repo = self.__get_repository(repo_name)
@@ -38,7 +38,7 @@ class GitHub:
 
     def get_issues_by_tag(self, repo_name: str, tag: str) -> List[Issue]:
         repo = self.__get_repository(repo_name)
-        issues_list_paged = repo.get_issues(tag=tag)
+        issues_list_paged = repo.get_issues(labels=[tag])
         return list(issues_list_paged)
 
     def update_issue_status(self, repo_name: str, issue_id: int, status: str) -> Issue:
