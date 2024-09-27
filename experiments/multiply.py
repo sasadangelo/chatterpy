@@ -41,7 +41,7 @@ def multiply_func(a: int, b: int) -> int:
 
 multiply = StructuredTool(name="multiply",
                           func=multiply_func,
-                          description="This function multiply two integers and return an integer. The input should be separated by comma, Example: 5,7",
+                          description="This function multiply two integers and return an integer.",
                           args_schema=MultiplyInput,
                           return_direct=True,
                           handle_tool_error=True)
