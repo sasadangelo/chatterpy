@@ -1,3 +1,9 @@
+# Copyright (C) 2023 Salvatore D'Angelo
+# Maintainer: Salvatore D'Angelo <sasadangelo@gmail.com>
+#
+# This file is part of the ChatterPy project maintained by Salvatore D'Angelo.
+#
+# SPDX-License-Identifier: MIT
 """
 chatterpy_gui.py
 
@@ -22,6 +28,7 @@ This file is part of the Running Data Analysis project.
 
 SPDX-License-Identifier: MIT
 """
+
 import yaml
 from dotenv import load_dotenv
 from gui.chatbot_page import ChatBotPage

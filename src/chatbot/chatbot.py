@@ -1,19 +1,14 @@
-# ChatBOT - the ChatBOT main class.
-#
-# This class represents a generic chatbot. It is composed by:
-# - a model
-# - a chat history
-#
 # Copyright (C) 2023 Salvatore D'Angelo
-# Maintainer: Salvatore D'Angelo sasadangelo@gmail.com
+# Maintainer: Salvatore D'Angelo <sasadangelo@gmail.com>
+#
+# This file is part of the ChatterPy project maintained by Salvatore D'Angelo.
 #
 # SPDX-License-Identifier: MIT
-from langchain_core.messages import AIMessage, HumanMessage
-from providers.provider_factory import LLMProviderFactory
+from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from chatbot.conversation import Conversation
-from rag.rag import RAG
 from prompts.prompt_formatter_factory import PromptFormatterFactory
-from langchain_core.messages import SystemMessage
+from providers.provider_factory import LLMProviderFactory
+from rag.rag import RAG
 
 
 class ChatBOT:

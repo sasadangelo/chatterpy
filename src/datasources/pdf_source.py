@@ -1,7 +1,12 @@
-# Class for managing PDF data sources
+# Copyright (C) 2023 Salvatore D'Angelo
+# Maintainer: Salvatore D'Angelo <sasadangelo@gmail.com>
+#
+# This file is part of the ChatterPy project maintained by Salvatore D'Angelo.
+#
+# SPDX-License-Identifier: MIT
 import os
-from datasources.data_source import Source
 from langchain_community.document_loaders import PyPDFLoader
+from datasources.data_source import Source
 
 
 class PDFSource(Source):

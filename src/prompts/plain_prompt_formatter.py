@@ -1,5 +1,5 @@
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.prompts import PromptTemplate
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from prompts.prompt_formatter import PromptFormatter
 
 

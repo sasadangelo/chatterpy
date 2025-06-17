@@ -5,8 +5,8 @@
 # model: "ibm/granite-13b-chat-v2"
 # api_url: "https://eu-de.ml.cloud.ibm.com"
 # parameters:
-  # Conversing with granite-13b-chat-v2 values suggested here:
-  # https://dataplatform.cloud.ibm.com/docs/content/wsj/analyze-data/fm-models-ibm-chat.html?context=wx
+# Conversing with granite-13b-chat-v2 values suggested here:
+# https://dataplatform.cloud.ibm.com/docs/content/wsj/analyze-data/fm-models-ibm-chat.html?context=wx
 #   decoding_method: sample
 #   min_new_tokens: 1
 #   max_new_tokens: 900
@@ -38,7 +38,7 @@
 # Ollama configuration parameters
 ####################################################################################################
 provider: "ollama"
-model: "llama3"
+model: "llama3.1:latest"
 base_url: http://localhost:11434
 parameters:
   temperature: 0.8

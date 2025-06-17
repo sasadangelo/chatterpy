@@ -1,0 +1,18 @@
+repos:
+  # Code Checkers
+  - repo: https://github.com/pycqa/flake8
+    rev: "7.1.1"
+    hooks:
+      - id: flake8
+        args: ["--config", ".flake8"]
+  - repo: https://github.com/ibm/detect-secrets
+    rev: 0.13.1+ibm.62.dss
+    hooks:
+      - id: detect-secrets
+        args: [--baseline, .secrets.baseline, --use-all-plugins]
+  # Formatters
+  - repo: https://github.com/pycqa/isort
+    rev: "5.13.2"
+    hooks:
+      - id: isort
+        args: ["--profile", "black"]

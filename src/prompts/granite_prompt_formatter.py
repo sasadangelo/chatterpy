@@ -1,7 +1,7 @@
 from typing import Union
 from langchain.prompts import PromptTemplate
+from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from prompts.prompt_formatter import PromptFormatter
-from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 
 
 class GranitePromptFormatter(PromptFormatter):

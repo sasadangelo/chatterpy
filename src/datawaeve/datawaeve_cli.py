@@ -1,11 +1,16 @@
+# Copyright (C) 2023 Salvatore D'Angelo
+# Maintainer: Salvatore D'Angelo <sasadangelo@gmail.com>
+#
+# This file is part of the ChatterPy project maintained by Salvatore D'Angelo.
+#
+# SPDX-License-Identifier: MIT
 import os
 import re
 from urllib.parse import urlparse
 from langchain.text_splitter import TokenTextSplitter
-from datasources.wikipedia_source import WikipediaSource
-from langchain.text_splitter import TokenTextSplitter
-from datasources.pdf_source import PDFSource
 from databases.qdrant_db import QdrantDatabase
+from datasources.pdf_source import PDFSource
+from datasources.wikipedia_source import WikipediaSource
 from embeddings.embedding_provider_factory import EmbeddingProviderFactory
 
 
@@ -48,9 +53,7 @@ class DataWeaveCLI:
             return False
 
         # Define the Wikipedia URL pattern
-        wikipedia_pattern = (
-            r"^(https?://)?(www\.)?(wikipedia\.org|[\w\-]+\.wikipedia\.org)/wiki/.+$"
-        )
+        wikipedia_pattern = r"^(https?://)?(www\.)?(wikipedia\.org|[\w\-]+\.wikipedia\.org)/wiki/.+$"
 
         # Use regex to check if the URL matches the Wikipedia pattern
         if re.match(wikipedia_pattern, url):

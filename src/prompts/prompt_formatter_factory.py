@@ -1,6 +1,6 @@
-from prompts.prompt_formatter import PromptFormatter
-from prompts.plain_prompt_formatter import PlainPromptFormatter
 from prompts.granite_prompt_formatter import GranitePromptFormatter
+from prompts.plain_prompt_formatter import PlainPromptFormatter
+from prompts.prompt_formatter import PromptFormatter
 
 DEFAULT_PROMPT_FORMATTER = "plain"
 

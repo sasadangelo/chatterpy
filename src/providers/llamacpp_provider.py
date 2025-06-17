@@ -1,8 +1,12 @@
+# Copyright (C) 2023 Salvatore D'Angelo
+# Maintainer: Salvatore D'Angelo <sasadangelo@gmail.com>
+#
+# This file is part of the ChatterPy project maintained by Salvatore D'Angelo.
+#
+# SPDX-License-Identifier: MIT
 import os
-import pprint
-from typing import List, Union
-from providers.provider import LLMProvider
 from langchain_community.llms import LlamaCpp
+from providers.provider import LLMProvider
 
 DEFAULT_MAX_TOKENS = 16
 DEFAULT_TEMPERATURE = 0.2
@@ -31,7 +35,7 @@ class LLamaCppProvider(LLMProvider):
         if "parameters" in self.config:
             self.parameters.update(self.config["parameters"])
 
-        if self.config["debug"] == True:
+        if self.config["debug"]:
             print("****************************************************************")
             print("Model parameters::                                              ")
             print("- max_tokens:", self.parameters["max_tokens"])

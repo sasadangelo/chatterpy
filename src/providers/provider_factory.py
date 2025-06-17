@@ -1,7 +1,13 @@
-from providers.watsonx_provider import WatsonXProvider
-from providers.ollama_provider import OllamaProvider
+# Copyright (C) 2023 Salvatore D'Angelo
+# Maintainer: Salvatore D'Angelo <sasadangelo@gmail.com>
+#
+# This file is part of the ChatterPy project maintained by Salvatore D'Angelo.
+#
+# SPDX-License-Identifier: MIT
 from providers.llamacpp_provider import LLamaCppProvider
+from providers.ollama_provider import OllamaProvider
 from providers.openai_provider import OpenAIProvider
+from providers.watsonx_provider import WatsonXProvider
 
 
 class LLMProviderFactory:

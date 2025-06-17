@@ -1,3 +1,9 @@
+# Copyright (C) 2023 Salvatore D'Angelo
+# Maintainer: Salvatore D'Angelo <sasadangelo@gmail.com>
+#
+# This file is part of the ChatterPy project maintained by Salvatore D'Angelo.
+#
+# SPDX-License-Identifier: MIT
 """
 DataWeave CLI Application Module
 
@@ -15,6 +21,7 @@ it with this command:
 
 python3 datawaeve_app.py -c configg.yml
 """
+
 import argparse
 import yaml
 from datawaeve.datawaeve_cli import DataWeaveCLI
@@ -44,24 +51,15 @@ def main():
     database with data coming from different sources.
     """
     parser = argparse.ArgumentParser(
-        description=(
-            "DataWeave CLI: Populate a vector database with data coming from "
-            "different sources."
-        )
+        description=("DataWeave CLI: Populate a vector database with data coming from " "different sources.")
     )
-    parser.add_argument(
-        "--config", "-c", type=str, required=True,
-        help="Path to the config file"
-    )
+    parser.add_argument("--config", "-c", type=str, required=True, help="Path to the config file")
     parser.add_argument(
         "--pdf",
         type=str,
         action="append",
         required=False,
-        help=(
-            "Specify the path of a PDF file or a folder containing multiple "
-            "PDF files."
-        ),
+        help=("Specify the path of a PDF file or a folder containing multiple " "PDF files."),
     )
     parser.add_argument(
         "--wikipedia",

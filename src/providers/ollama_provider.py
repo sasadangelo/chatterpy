@@ -1,5 +1,11 @@
-from providers.provider import LLMProvider
+# Copyright (C) 2023 Salvatore D'Angelo
+# Maintainer: Salvatore D'Angelo <sasadangelo@gmail.com>
+#
+# This file is part of the ChatterPy project maintained by Salvatore D'Angelo.
+#
+# SPDX-License-Identifier: MIT
 from langchain_community.llms import Ollama
+from providers.provider import LLMProvider
 
 DEFAULT_TEMPERATURE = 0.8
 DEFAULT_MAX_TOKENS = 128
@@ -28,7 +34,7 @@ class OllamaProvider(LLMProvider):
         if "parameters" in self.config:
             parameters.update(self.config["parameters"])
 
-        if self.config["debug"] == True:
+        if self.config["debug"]:
             print("****************************************************************")
             print("Model parameters::                                              ")
             print("- max_tokens:", parameters["max_tokens"])
@@ -52,7 +58,7 @@ class OllamaProvider(LLMProvider):
         )
 
     def generate(self, prompt):
-        if self.config["debug"] == True:
+        if self.config["debug"]:
             print("****************************************************************")
             print("Prompt:")
             print(prompt)

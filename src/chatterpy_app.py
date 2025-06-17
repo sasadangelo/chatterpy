@@ -1,3 +1,9 @@
+# Copyright (C) 2023 Salvatore D'Angelo
+# Maintainer: Salvatore D'Angelo <sasadangelo@gmail.com>
+#
+# This file is part of the ChatterPy project maintained by Salvatore D'Angelo.
+#
+# SPDX-License-Identifier: MIT
 """
 chatterpy_app.py
 
@@ -18,9 +24,10 @@ This file is part of the Running Data Analysis project.
 
 SPDX-License-Identifier: MIT
 """
+
 import argparse
-from dotenv import load_dotenv
 import yaml
+from dotenv import load_dotenv
 from chatbot.chatbot import ChatBOT
 
 
@@ -51,9 +58,7 @@ def load_config(config_file):
 
 # Parse command-line arguments
 parser = argparse.ArgumentParser(description="LLM Provider Factory")
-parser.add_argument(
-    "--config", "-c", type=str, required=True, help="Path to the config file"
-)
+parser.add_argument("--config", "-c", type=str, required=True, help="Path to the config file")
 parser.add_argument(
     "--env",
     "-e",

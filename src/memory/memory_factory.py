@@ -1,8 +1,10 @@
-from langchain.memory import (
-    ConversationBufferMemory,
-    ConversationBufferWindowMemory,
-    ConversationSummaryMemory,
-)
+# Copyright (C) 2023 Salvatore D'Angelo
+# Maintainer: Salvatore D'Angelo <sasadangelo@gmail.com>
+#
+# This file is part of the ChatterPy project maintained by Salvatore D'Angelo.
+#
+# SPDX-License-Identifier: MIT
+from langchain.memory import ConversationBufferMemory, ConversationBufferWindowMemory, ConversationSummaryMemory
 from langchain.memory.chat_memory import BaseChatMemory
 from providers.provider_factory import LLMProviderFactory
 

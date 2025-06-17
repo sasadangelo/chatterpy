@@ -1,9 +1,7 @@
-# Page - Generic Streaamlit Page
-#
-# This class is a generic streamlit page. All the application pages will derive from this class.
-#
 # Copyright (C) 2023 Salvatore D'Angelo
-# Maintainer: Salvatore D'Angelo sasadangelo@gmail.com
+# Maintainer: Salvatore D'Angelo <sasadangelo@gmail.com>
+#
+# This file is part of the ChatterPy project maintained by Salvatore D'Angelo.
 #
 # SPDX-License-Identifier: MIT
 

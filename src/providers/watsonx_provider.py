@@ -1,7 +1,12 @@
+# Copyright (C) 2023 Salvatore D'Angelo
+# Maintainer: Salvatore D'Angelo <sasadangelo@gmail.com>
+#
+# This file is part of the ChatterPy project maintained by Salvatore D'Angelo.
+#
+# SPDX-License-Identifier: MIT
 import os
-from typing import Union
-from providers.provider import LLMProvider
 from langchain_ibm import WatsonxLLM
+from providers.provider import LLMProvider
 
 
 class WatsonXProvider(LLMProvider):
@@ -19,7 +24,7 @@ class WatsonXProvider(LLMProvider):
         )
 
     def generate(self, prompt):
-        if self.config["debug"] == True:
+        if self.config["debug"]:
             print("****************************************************************")
             print("Prompt:")
             print(prompt)

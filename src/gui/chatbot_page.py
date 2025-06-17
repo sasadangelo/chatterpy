@@ -1,17 +1,14 @@
-# ChatBotPage - Display the ChatBot page
-#
-# This class is responsible for displaying the ChatBot page using Streamlit.
-#
 # Copyright (C) 2023 Salvatore D'Angelo
-# Maintainer: Salvatore D'Angelo sasadangelo@gmail.com
+# Maintainer: Salvatore D'Angelo <sasadangelo@gmail.com>
+#
+# This file is part of the ChatterPy project maintained by Salvatore D'Angelo.
 #
 # SPDX-License-Identifier: MIT
 import streamlit as st
-from langchain.schema import HumanMessage, AIMessage
-
+from langchain.schema import AIMessage, HumanMessage
+from chatbot.chatbot import ChatBOT
 # from src.models.base_model import Model
 from gui.page import Page
-from chatbot.chatbot import ChatBOT
 
 
 # This class is responsible for displaying the ChatBOT page using Streamlit.

@@ -1,5 +1,11 @@
-from providers.provider import LLMProvider
+# Copyright (C) 2023 Salvatore D'Angelo
+# Maintainer: Salvatore D'Angelo <sasadangelo@gmail.com>
+#
+# This file is part of the ChatterPy project maintained by Salvatore D'Angelo.
+#
+# SPDX-License-Identifier: MIT
 from langchain_openai import ChatOpenAI
+from providers.provider import LLMProvider
 
 DEFAULT_TEMPERATURE = 0.7
 DEFAULT_MAX_TOKENS = 200
@@ -41,7 +47,7 @@ class OpenAIProvider(LLMProvider):
         if "parameters" in self.config:
             parameters.update(self.config["parameters"])
 
-        if self.config["debug"] == True:
+        if self.config["debug"]:
             print("****************************************************************")
             print("Model parameters::                                              ")
             print("- temperature:", parameters["temperature"])
@@ -62,7 +68,7 @@ class OpenAIProvider(LLMProvider):
         )
 
     def generate(self, prompt):
-        if self.config["debug"] == True:
+        if self.config["debug"]:
             print("****************************************************************")
             print("Prompt:")
             print(prompt)

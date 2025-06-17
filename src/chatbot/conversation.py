@@ -1,9 +1,7 @@
-# Conversation - a Generic ChatBot conversation
-#
-# This class represents a generic chatbot conversation.
-#
 # Copyright (C) 2023 Salvatore D'Angelo
-# Maintainer: Salvatore D'Angelo sasadangelo@gmail.com
+# Maintainer: Salvatore D'Angelo <sasadangelo@gmail.com>
+#
+# This file is part of the ChatterPy project maintained by Salvatore D'Angelo.
 #
 # SPDX-License-Identifier: MIT
 from memory.memory_factory import MemoryFactory
@@ -21,9 +19,7 @@ class Conversation:
         self.conversation = MemoryFactory.get_memory(config)
 
     def save_interaction(self, user_message, ai_message):
-        self.conversation.save_context(
-            {"input": user_message.content}, {"output": ai_message.content}
-        )
+        self.conversation.save_context({"input": user_message.content}, {"output": ai_message.content})
 
     def get_chat_history_messages(self):
         return self.conversation.load_memory_variables({}).get("history", "")
