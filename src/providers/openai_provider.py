@@ -5,14 +5,8 @@
 #
 # SPDX-License-Identifier: MIT
 from langchain_openai import ChatOpenAI
-from providers.provider import LLMProvider
+from providers.provider import LLMProvider, DEFAULTS_LLM_CONFIG
 
-DEFAULT_TEMPERATURE = 0.7
-DEFAULT_MAX_TOKENS = 200
-DEFAULT_TOP_P = 0.9
-DEFAULT_TOP_K = 40
-DEFAULT_REPEAT_PENALTY = 1.1
-DEFAULT_CONTEXT_SIZE = 2048
 
 # Make sure you have a Python 3 virtual environment active:
 # $ source venv/bin/activate
@@ -30,32 +24,28 @@ DEFAULT_CONTEXT_SIZE = 2048
 
 # To use ChatGPT 3.5 set model_name="gpt-3.5-turbo" and omit the parameter openai_api_base
 # To use ChatGPT 4 set model_name="gpt-4" and omit the parameter openai_api_base
+from typing import Any, Dict
+
+
 class OpenAIProvider(LLMProvider):
-    def create_model(self):
+    def create_model(self) -> None:
+        """
+        Initialize the OpenAI Chat model with configuration parameters.
+
+        The parameters are merged from global defaults and any user overrides in the config.
+        """
         model_name = self.config["model"]
         base_url = self.config["base_url"]
 
-        # Set the default parameters
-        parameters = {
-            "temperature": DEFAULT_TEMPERATURE,
-            "max_tokens": DEFAULT_MAX_TOKENS,
-            "top_p": DEFAULT_TOP_P,
-            "repeat_penalty": DEFAULT_REPEAT_PENALTY,
-        }
+        # Start with global default parameters (these are typical OpenAI defaults)
+        parameters: Dict[str, Any] = DEFAULTS_LLM_CONFIG.copy()
+        # Override with user-provided parameters from the config file
+        parameters.update(self.config.get("parameters", {}))
 
-        # Overwrite default values with the one in the YAML file
-        if "parameters" in self.config:
-            parameters.update(self.config["parameters"])
+        # Log the final parameters if debug is enabled
+        self._debug_log("Model parameters::", *(f"- {k}: {v}" for k, v in parameters.items()))
 
-        if self.config["debug"]:
-            print("****************************************************************")
-            print("Model parameters::                                              ")
-            print("- temperature:", parameters["temperature"])
-            print("- max_tokens:", parameters["max_tokens"])
-            print("- top_p:", parameters["top_p"])
-            print("- repeat_penalty:", parameters["repeat_penalty"])
-            print("****************************************************************")
-
+        # Instantiate the ChatOpenAI model with the specified parameters
         self.model = ChatOpenAI(
             temperature=parameters["temperature"],
             max_tokens=parameters["max_tokens"],
@@ -67,11 +57,12 @@ class OpenAIProvider(LLMProvider):
             },
         )
 
-    def generate(self, prompt):
-        if self.config["debug"]:
-            print("****************************************************************")
-            print("Prompt:")
-            print(prompt)
-            print("****************************************************************")
+    def generate(self, prompt: str) -> str:
+        """
+        Generate a response from the OpenAI model given an input prompt.
+
+        Logs the prompt if debugging is enabled and returns the content string.
+        """
+        self._debug_log("Prompt:", prompt)
         result = self.model.invoke(prompt)
         return result.content

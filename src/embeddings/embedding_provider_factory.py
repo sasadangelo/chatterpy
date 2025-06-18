@@ -4,16 +4,19 @@
 # This file is part of the ChatterPy project maintained by Salvatore D'Angelo.
 #
 # SPDX-License-Identifier: MIT
+from typing import Dict, Type, Optional
+from embeddings.embedding_provider import EmbeddingProvider
 from embeddings.ollama_embedding_provider import OllamaEmbeddingProvider
 
 
 class EmbeddingProviderFactory:
-    providers = {
+    providers: Dict[str, Type[EmbeddingProvider]] = {
         "ollama": OllamaEmbeddingProvider,
+        # Add other providers here
     }
 
     # The single provider instance
-    _instance = None
+    _instance: Optional[EmbeddingProvider] = None
 
     @classmethod
     def get_embedding_provider(cls, config):

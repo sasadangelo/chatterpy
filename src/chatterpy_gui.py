@@ -31,7 +31,11 @@ SPDX-License-Identifier: MIT
 
 import yaml
 from dotenv import load_dotenv
+from typing import Optional, Dict
+import functools
 from gui.chatbot_page import ChatBotPage
+from gui.page import Page
+import streamlit as st
 
 
 def singleton(cls):
@@ -51,6 +55,7 @@ def singleton(cls):
     instances = {}
 
     # Function to get the singleton instance.
+    @functools.wraps(cls)
     def get_instance(*args, **kwargs):
         if cls not in instances:
             instances[cls] = cls(*args, **kwargs)
@@ -78,7 +83,9 @@ class ChatBotApp:
         config (dict): Configuration settings for the application.
     """
 
-    def __init__(self, config):
+    current_page: Optional["Page"]
+
+    def __init__(self, config: Dict) -> None:
         """
         Initialize the ChatBotApp instance and load the activities.
 
@@ -93,7 +100,7 @@ class ChatBotApp:
         self.current_page = None
         self.config = config
 
-    def run(self):
+    def run(self) -> None:
         """
         Runs the ChatBotApp and initializes the first page as
         ChatBotPage using the provided configuration.
@@ -105,9 +112,12 @@ class ChatBotApp:
         It is responsible for starting the application and displaying the
         initial page to the user.
         """
-        self.select_page(ChatBotPage(self.config))
+        try:
+            self.select_page(ChatBotPage(self.config))
+        except RuntimeError as e:
+            st.error(str(e))
 
-    def select_page(self, page):
+    def select_page(self, page: "Page") -> None:
         """
         Selects and renders the current page based on user navigation logic.
         Here you can add logic for navigating between different pages.
@@ -122,29 +132,29 @@ class ChatBotApp:
         self.current_page.render()
 
 
-def load_environment(env_file):
+def load_environment(env_file: str) -> None:
     """
     Load environment variables from a specified .env file.
 
     Args:
         env_file (str): Path to the .env file containing environment variables.
     """
-    load_dotenv(env_file)
+    try:
+        load_dotenv(env_file)
+    except Exception as e:
+        print(f"Warning: Could not load environment file {env_file}: {e}")
 
 
-def load_config(config_file):
-    """
-    Load a YAML configuration file and return its content.
-
-    Args:
-        config_file (str): Path to the YAML configuration file.
-
-    Returns:
-        dict: Configuration data loaded from the YAML file.
-    """
-    with open(config_file, "r", encoding="utf-8") as f:
-        yaml_config = yaml.safe_load(f)
-    return yaml_config
+def load_config(config_file: str) -> Dict:
+    try:
+        with open(config_file, "r", encoding="utf-8") as f:
+            yaml_config = yaml.safe_load(f)
+        return yaml_config
+    except FileNotFoundError:
+        print(f"Config file not found: {config_file}")
+    except yaml.YAMLError as e:
+        print(f"Error parsing config file: {e}")
+    return {}
 
 
 if __name__ == "__main__":

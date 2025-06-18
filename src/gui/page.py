@@ -8,7 +8,16 @@
 
 # This class represents a generic application page. All the application pages must
 # derive from this class and implement the render method.
-class Page:
+from abc import ABC, abstractmethod
+
+
+# Abstract base class representing a generic Page.
+class Page(ABC):
     # This is the method each subclass must implement to render the page.
-    def render(self):
-        raise NotImplementedError("Subclasses must implement the render method")
+    @abstractmethod
+    def render(self) -> None:
+        """
+        Render the page.
+        Subclasses must provide their own implementation.
+        """
+        pass

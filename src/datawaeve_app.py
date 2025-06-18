@@ -24,10 +24,11 @@ python3 datawaeve_app.py -c configg.yml
 
 import argparse
 import yaml
+from typing import Dict
 from datawaeve.datawaeve_cli import DataWeaveCLI
 
 
-def load_config(config_file):
+def load_config(config_file: str) -> Dict:
     """
     Load a YAML configuration file.
 
@@ -37,9 +38,15 @@ def load_config(config_file):
     Returns:
         dict: Configuration data loaded from the file.
     """
-    with open(config_file, "r", encoding="utf-8") as f:
-        config = yaml.safe_load(f)
-    return config
+    try:
+        with open(config_file, "r", encoding="utf-8") as f:
+            return yaml.safe_load(f)
+    except FileNotFoundError:
+        print(f"[ERROR] Config file not found: {config_file}")
+        exit(1)
+    except yaml.YAMLError as e:
+        print(f"[ERROR] Invalid YAML syntax: {e}")
+        exit(1)
 
 
 def main():
@@ -73,6 +80,10 @@ def main():
 
     # Load the configuration file
     config = load_config(args.config)
+
+    if not args.pdf and not args.wikipedia:
+        print("[INFO] No data sources provided. Use --pdf or --wikipedia.")
+        exit(0)
 
     # Load data from all the supported data sources
     datawaeve_cli = DataWeaveCLI(config)

@@ -28,10 +28,11 @@ SPDX-License-Identifier: MIT
 import argparse
 import yaml
 from dotenv import load_dotenv
+from typing import Optional
 from chatbot.chatbot import ChatBOT
 
 
-def load_environment(env_file):
+def load_environment(env_file: str) -> None:
     """
     Load environment variables from a specified file.
 
@@ -41,7 +42,7 @@ def load_environment(env_file):
     load_dotenv(env_file)
 
 
-def load_config(config_file):
+def load_config(config_file: str) -> Optional[dict]:
     """
     Load a configuration file and return its content.
 
@@ -51,61 +52,63 @@ def load_config(config_file):
     Returns:
         dict: Configuration data loaded from the file.
     """
-    with open(config_file, "r", encoding="utf-8") as f:
-        config_data = yaml.safe_load(f)
-    return config_data
+    try:
+        with open(config_file, "r", encoding="utf-8") as f:
+            config_data = yaml.safe_load(f)
+        return config_data
+    except FileNotFoundError:
+        print(f"Error: Config file not found: {config_file}")
+    except yaml.YAMLError as e:
+        print(f"Error: Failed to parse config file {config_file}: {e}")
+    return None
 
 
-# Parse command-line arguments
-parser = argparse.ArgumentParser(description="LLM Provider Factory")
-parser.add_argument("--config", "-c", type=str, required=True, help="Path to the config file")
-parser.add_argument(
-    "--env",
-    "-e",
-    type=str,
-    required=False,
-    default=".env",
-    help="Path to the environment file",
-)
-args = parser.parse_args()
-
-# Load environment variables
-load_environment(args.env)
-# Load the configuration file
-config = load_config(args.config)
-
-# Create a ChatBOT object
-chatbot = ChatBOT(config)
-
-# Print a welcome message for the ChatterPy command-line interface.
-print("Welcome to the ChatterPy command-line interface!")
-print("Start the conversation (Type 'quit' or press 'CTRL-D' to exit)")
-
-
-def main():
+def main() -> None:
     """
     Main entry point of the ChatBOT command-line interface.
 
     Handles command-line arguments, initializes the ChatBOT, and facilitates
     a conversation with the ChatBOT until the user chooses to exit.
     """
+
+    # Parse command-line arguments
+    parser = argparse.ArgumentParser(description="ChatterPy CLI")
+    parser.add_argument("--config", "-c", type=str, required=True, help="Path to the config file")
+    parser.add_argument(
+        "--env",
+        "-e",
+        type=str,
+        required=False,
+        default=".env",
+        help="Path to the environment file",
+    )
+    args = parser.parse_args()
+
+    # Load environment variables
+    load_environment(args.env)
+    # Load the configuration file
+    config = load_config(args.config)
+
+    # Create a ChatBOT object
+    chatbot = ChatBOT(config)
+
+    # Print a welcome message for the ChatterPy command-line interface.
+    print("Welcome to the ChatterPy CLI!")
+    print("Start the conversation (Type 'quit' or press 'CTRL-D' to exit)")
+
     try:
         while True:
-            # Ask input from the user
-            user_message = input("you> ")
+            user_message = input("you> ").strip()
+            if not user_message:
+                continue
             if user_message.lower() == "quit":
                 print("\nBye.")
                 break
 
-            # Generate the chatbot's response
             response = chatbot.get_answer(user_message)
+            print("\nassistant>", response)
 
-            # Print the chatbot's response
-            print("")
-            print("assistant>", response)
-
-    except EOFError:
-        # Terminate the conversation
+    except (EOFError, KeyboardInterrupt):
         print("\nBye.")
 
 

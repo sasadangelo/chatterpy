@@ -10,12 +10,30 @@ from datasources.data_source import Source
 
 
 class WikipediaSource(Source):
-    def __init__(self, source):
+    """
+    Wikipedia source loader that fetches content from a Wikipedia page URL.
+    """
+
+    def __init__(self, source: str) -> None:
+        """
+        Initialize with a Wikipedia URL.
+
+        Args:
+            source (str): Wikipedia page URL.
+        """
         self.source = source
         self.pages = []
 
-    def extract_title_from_url(self):
-        # Extract the page title from the Wikipedia URL
+    def extract_title_from_url(self) -> str:
+        """
+        Extract the Wikipedia page title from the URL.
+
+        Returns:
+            str: The Wikipedia page title.
+
+        Raises:
+            ValueError: If the URL is not a valid Wikipedia URL.
+        """
         parsed_url = urlparse(self.source)
         path = parsed_url.path
         if path.startswith("/wiki/"):
@@ -23,7 +41,10 @@ class WikipediaSource(Source):
         else:
             raise ValueError("The URL does not seem to be a valid Wikipedia URL.")
 
-    def load_data(self):
+    def load_data(self) -> None:
+        """
+        Load the Wikipedia page content into self.pages.
+        """
         # Initialize the Wikipedia API
         user_agent = "DataWaeve CLI"
         wiki_wiki = wikipediaapi.Wikipedia(user_agent, "en")
@@ -42,9 +63,15 @@ class WikipediaSource(Source):
             print(f"Loaded content from Wikipedia page: {self.source}")
         except Exception as e:
             print(f"An error occurred while loading Wikipedia data: {e}")
+            self.pages = []
 
-    def get_text(self):
+    def get_text(self) -> str:
+        """
+        Return the text content of the loaded Wikipedia page.
+
+        Returns:
+            str: The text of the Wikipedia page or empty string if no content loaded.
+        """
         if self.pages:
             return self.pages[0]
-        else:
-            return ""
+        return ""

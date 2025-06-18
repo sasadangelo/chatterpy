@@ -10,11 +10,24 @@ from datasources.data_source import Source
 
 
 class PDFSource(Source):
-    def __init__(self, source):
+    """
+    PDF source loader that can load a single PDF file or multiple PDFs from a directory.
+    """
+
+    def __init__(self, source: str) -> None:
+        """
+        Initialize with a file path or directory path.
+
+        Args:
+            source (str): Path to a PDF file or directory containing PDFs.
+        """
         self.source = source
         self.pages = []
 
-    def load_data(self):
+    def load_data(self) -> None:
+        """
+        Loads PDF data from the specified file or directory into self.pages.
+        """
         if os.path.isfile(self.source) and self.source.endswith(".pdf"):
             loader = PyPDFLoader(self.source)
             self.pages = loader.load()
@@ -35,11 +48,13 @@ class PDFSource(Source):
         else:
             print(f"Invalid PDF source: {self.source}")
 
-    def get_text(self):
+    def get_text(self) -> str:
+        """
+        Concatenate and return the text content of all loaded pages.
+
+        Returns:
+            str: Concatenated text from all pages or empty string if no pages loaded.
+        """
         if self.pages:
-            page_text = ""
-            for page in self.pages:
-                page_text += page.page_content
-            return page_text
-        else:
-            return ""
+            return "".join(page.page_content for page in self.pages)
+        return ""
