@@ -6,6 +6,7 @@
 # SPDX-License-Identifier: MIT
 from langchain_openai import ChatOpenAI
 from providers.provider import LLMProvider, DEFAULTS_LLM_CONFIG
+from langchain_core.messages import BaseMessage
 
 
 # Make sure you have a Python 3 virtual environment active:
@@ -24,7 +25,7 @@ from providers.provider import LLMProvider, DEFAULTS_LLM_CONFIG
 
 # To use ChatGPT 3.5 set model_name="gpt-3.5-turbo" and omit the parameter openai_api_base
 # To use ChatGPT 4 set model_name="gpt-4" and omit the parameter openai_api_base
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 
 class OpenAIProvider(LLMProvider):
@@ -46,7 +47,7 @@ class OpenAIProvider(LLMProvider):
         self._debug_log("Model parameters::", *(f"- {k}: {v}" for k, v in parameters.items()))
 
         # Instantiate the ChatOpenAI model with the specified parameters
-        self.model = ChatOpenAI(
+        self.model: ChatOpenAI = ChatOpenAI(
             temperature=parameters["temperature"],
             max_tokens=parameters["max_tokens"],
             model_name=model_name,
@@ -57,12 +58,14 @@ class OpenAIProvider(LLMProvider):
             },
         )
 
-    def generate(self, prompt: str) -> str:
+    def generate(self, messages: List[BaseMessage]) -> str:
         """
-        Generate a response from the OpenAI model given an input prompt.
+        Generate a response from OpenAI model given a list of chat messages.
 
-        Logs the prompt if debugging is enabled and returns the content string.
+        messages: list of dicts with keys: 'role' ('system','user','assistant'), 'content' (str).
         """
-        self._debug_log("Prompt:", prompt)
-        result = self.model.invoke(prompt)
-        return result.content
+        self._debug_log("Messages:", messages)
+
+        # Pass directly the messages to the model native chat
+        response = self.model.chat(messages)  # oppure .invoke(messages) a seconda della libreria
+        return response.content

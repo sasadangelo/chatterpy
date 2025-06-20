@@ -4,7 +4,8 @@
 # This file is part of the ChatterPy project maintained by Salvatore D'Angelo.
 #
 # SPDX-License-Identifier: MIT
-from typing import Any, Dict
+from typing import Any, Dict, List
+from langchain_core.messages import BaseMessage
 
 # Default configuration values for all LLM providers.
 # These can be overridden by provider-specific or user-defined settings.
@@ -30,12 +31,17 @@ class LLMProvider:
     def _debug_log(self, *args: Any) -> None:
         """
         Print debug information if 'debug' is enabled in the config.
-        Accepts any number of arguments and prints them in a formatted block.
+        Supports printing plain values as well as lists of BaseMessage instances.
         """
         if self.config.get("debug", False):
             print("****************************************************************")
             for arg in args:
-                print(arg)
+                if isinstance(arg, list) and all(isinstance(m, BaseMessage) for m in arg):
+                    print("Chat messages:")
+                    for i, msg in enumerate(arg, 1):
+                        print(f"  {i}. [{msg.type}] {msg.content}")
+                else:
+                    print(arg)
             print("****************************************************************")
 
     def create_model(self) -> None:
@@ -45,7 +51,7 @@ class LLMProvider:
         """
         raise NotImplementedError("Subclasses should implement this method.")
 
-    def generate(self, prompt: str) -> str:
+    def generate(self, messages: List[Dict[str, str]]) -> str:
         """
         Abstract method to be implemented by subclasses.
         Accepts a prompt string and returns the model's generated output.

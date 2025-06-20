@@ -4,11 +4,13 @@
 # This file is part of the ChatterPy project maintained by Salvatore D'Angelo.
 #
 # SPDX-License-Identifier: MIT
+from typing import List
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from chatbot.conversation import Conversation
 from prompts.prompt_formatter_factory import PromptFormatterFactory
 from providers.provider_factory import LLMProviderFactory
 from rag.rag import RAG
+from langchain_core.messages import BaseMessage
 
 
 class ChatBOT:
@@ -46,20 +48,39 @@ class ChatBOT:
         user_message = HumanMessage(content=question)
         # If RAG is enabled get the context from the RAG subsytem
         context = self.rag.get_context(question) if self.rag.is_enabled() else None
-        # Create the prompt to pass to the model
-        prompt = self.prompt_formatter.get_prompt(
-            context,
-            self.system_message,
-            self.conversation.get_chat_history_messages(),
-            user_message,
-        )
-        # Get the answer from the model
-        ai_message_text = self.provider.generate(prompt)
+
+        # Build a list of BaseMessage (system + context + history + user)
+        messages = self._build_messages(context, user_message)
+
+        # Call the provider with the full list of messages
+        ai_message_text = self.provider.generate(messages)
         ai_message_text = self._process_output(ai_message_text)
+
         ai_message = AIMessage(content=ai_message_text)
         # Save the interaction in the chat history
         self.conversation.save_interaction(user_message, ai_message)
         return ai_message_text
+
+    def _build_messages(self, context: str, user_message: HumanMessage) -> List[BaseMessage]:
+        """
+        Construct the full list of BaseMessage to send to the LLM.
+        """
+        messages: List[BaseMessage] = []
+
+        # Always add the system prompt
+        messages.append(self.system_message)
+
+        # If RAG context is present, prepend it as user message
+        if context:
+            messages.append(HumanMessage(content=context.strip()))
+
+        # Add previous chat history (already BaseMessage instances)
+        messages.extend(self.conversation.get_chat_history_messages())
+
+        # Add the latest user question
+        messages.append(user_message)
+
+        return messages
 
     def _process_output(self, text: str) -> str:
         if self.show_reasoning:

@@ -4,12 +4,12 @@
 # This file is part of the ChatterPy project maintained by Salvatore D'Angelo.
 #
 # SPDX-License-Identifier: MIT
-from typing import Any, Dict
-from langchain_community.llms import Ollama
+from typing import Any, Dict, List
+from langchain_community.llms.ollama import Ollama
 from providers.provider import LLMProvider, DEFAULTS_LLM_CONFIG
 from requests.exceptions import ConnectionError as RequestsConnectionError
+from langchain_core.messages import BaseMessage
 
-# Ollama-specific default parameters that override the global defaults
 DEFAULT_OLLAMA_LLM_CONFIG: Dict[str, Any] = {
     "temperature": 0.8,
     "max_tokens": 128,
@@ -18,25 +18,15 @@ DEFAULT_OLLAMA_LLM_CONFIG: Dict[str, Any] = {
 
 class OllamaProvider(LLMProvider):
     def create_model(self) -> None:
-        """
-        Initialize the Ollama model instance with the merged configuration parameters.
-
-        The parameter precedence is: global defaults < Ollama-specific defaults < user config.
-        """
         model_name = self.config["model"]
         base_url = self.config["base_url"]
 
-        # Start with global default parameters
         parameters: Dict[str, Any] = DEFAULTS_LLM_CONFIG.copy()
-        # Override with Ollama-specific default parameters
         parameters.update(DEFAULT_OLLAMA_LLM_CONFIG)
-        # Override with user-provided parameters from the config file
         parameters.update(self.config.get("parameters", {}))
 
-        # Log the final parameters if debug is enabled
         self._debug_log("Model parameters::", *(f"- {k}: {v}" for k, v in parameters.items()))
 
-        # Instantiate the Ollama model with the specified parameters
         self.model = Ollama(
             model=model_name,
             base_url=base_url,
@@ -48,18 +38,18 @@ class OllamaProvider(LLMProvider):
             num_ctx=parameters["context_size"],
         )
 
-    def generate(self, prompt: str) -> str:
+    def generate(self, messages: List[BaseMessage]) -> str:
         """
-        Generate a response from the Ollama model given an input prompt.
+        Generate a response from the Ollama model given a list of chat messages.
 
-        Logs the prompt if debugging is enabled and returns the generated text.
+        Each message is a dict with keys: 'role' (system, user, assistant) and 'content'.
+
+        This method converts the messages into a prompt text before invoking the model.
         """
-        self._debug_log("Prompt:", prompt)
+        self._debug_log("Prompt:", messages)
         try:
-            result = self.model.invoke(prompt)
-            return result
+            return self.model.invoke(messages)
         except RequestsConnectionError as e:
-            # Log the error (optional)
             self._debug_log("Ollama server connection error:", str(e))
             raise RuntimeError(
                 "❌ The language model server (Ollama) is currently unavailable.\n"

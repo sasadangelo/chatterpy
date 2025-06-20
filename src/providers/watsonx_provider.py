@@ -5,9 +5,10 @@
 #
 # SPDX-License-Identifier: MIT
 import os
-from typing import Any, Dict
+from typing import Any, Dict, List
 from langchain_ibm import WatsonxLLM
 from providers.provider import LLMProvider, DEFAULTS_LLM_CONFIG
+from langchain_core.messages import BaseMessage
 
 # WatsonX-specific default parameters overriding the global defaults,
 # including some extra parameters like min_new_tokens and decoding_method.
@@ -60,11 +61,14 @@ class WatsonXProvider(LLMProvider):
             params=self.parameters,
         )
 
-    def generate(self, prompt: str) -> str:
+    def generate(self, messages: List[BaseMessage]) -> str:
         """
-        Generate text from the WatsonX model for the given prompt.
+        Generate text from WatsonX given a list of chat messages.
 
-        Logs the prompt if debug is enabled and returns the generated text.
+        messages: List of dicts with 'role' and 'content' keys.
         """
-        self._debug_log("Prompt:", prompt)
-        return self.model.invoke(prompt)
+        self._debug_log("Messages:", messages)
+
+        # Pass directly the messages to the model native chat
+        response = self.model.chat(messages)
+        return response.content

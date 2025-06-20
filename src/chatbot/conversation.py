@@ -4,6 +4,7 @@
 # This file is part of the ChatterPy project maintained by Salvatore D'Angelo.
 #
 # SPDX-License-Identifier: MIT
+from typing import Any
 from memory.memory_factory import MemoryFactory
 from langchain_core.messages import HumanMessage, AIMessage
 
@@ -31,14 +32,14 @@ class Conversation:
         """
         self.conversation.save_context({"input": user_message.content}, {"output": ai_message.content})
 
-    def get_chat_history_messages(self):
+    def get_chat_history_messages(self) -> Any:
         """
         Retrieve chat history messages from memory.
         Returns either a string or a list depending on memory implementation.
         """
         return self.conversation.load_memory_variables({}).get("history", "")
 
-    def clear(self):
+    def clear(self) -> None:
         """
         Clear the conversation history.
         """

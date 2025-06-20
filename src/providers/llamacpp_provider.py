@@ -5,9 +5,10 @@
 #
 # SPDX-License-Identifier: MIT
 import os
-from typing import Any, Dict
-from langchain_community.llms import LlamaCpp
+from typing import Any, Dict, List
+from langchain_community.llms.llamacpp import LlamaCpp
 from providers.provider import LLMProvider, DEFAULTS_LLM_CONFIG
+from langchain_core.messages import BaseMessage, SystemMessage, HumanMessage, AIMessage
 
 # Provider-specific default configuration for LlamaCpp
 DEFAULTS_LLAMACPP_LLM_CONFIG: Dict[str, Any] = {
@@ -48,12 +49,42 @@ class LLamaCppProvider(LLMProvider):
             n_ctx=parameters["context_size"],
         )
 
-    def generate(self, prompt: str) -> str:
+    def generate(self, messages: List[BaseMessage]) -> str:
         """
-        Generate a response from the LlamaCpp model given an input prompt.
+        Generate a response using the LlamaCpp model, from a list of BaseMessage instances.
 
-        Logs the prompt if debugging is enabled and returns the model's output string.
+        The messages are converted into a plain prompt string with role prefixes,
+        which is suitable for LlamaCpp's plain text interface.
         """
+        prompt_parts = []
+
+        # Extract system message if present
+        system_message = next((m for m in messages if isinstance(m, SystemMessage)), None)
+        if system_message:
+            prompt_parts.append(system_message.content.strip())
+
+        # Identify latest user message (usually the last one)
+        user_message = next((m for m in reversed(messages) if isinstance(m, HumanMessage)), None)
+        chat_history = [m for m in messages if m not in (system_message, user_message)]
+
+        # Add all previous assistant/user exchanges before the latest question
+        for msg in chat_history:
+            if isinstance(msg, HumanMessage):
+                prompt_parts.append(f"User: {msg.content.strip()}")
+            elif isinstance(msg, AIMessage):
+                prompt_parts.append(f"Assistant: {msg.content.strip()}")
+
+        # Add final user message
+        if user_message:
+            prompt_parts.append(f"User: {user_message.content.strip()}")
+
+        # Add assistant prefix as signal for generation
+        prompt_parts.append("Assistant:")
+
+        # Compose final prompt
+        prompt = "\n".join(prompt_parts)
+
         self._debug_log("Prompt:", prompt)
+
         result = self.model.invoke(prompt)
         return result
