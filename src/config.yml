@@ -127,6 +127,7 @@ document_chunk_overlap: 0
 # embedding_distance_function: Cosine
 
 ####################################################################################################
-# DEBUG option
+# DEBUG options
 ####################################################################################################
 debug: true
+enable_tracing: true

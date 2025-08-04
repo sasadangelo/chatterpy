@@ -4,11 +4,13 @@
 # This file is part of the ChatterPy project maintained by Salvatore D'Angelo.
 #
 # SPDX-License-Identifier: MIT
+import os
 from typing import Any, Dict, List
 from langchain_community.llms.ollama import Ollama
 from providers.provider import LLMProvider, DEFAULTS_LLM_CONFIG
 from requests.exceptions import ConnectionError as RequestsConnectionError
 from langchain_core.messages import BaseMessage
+from langchain_core.tracers import LangChainTracer
 
 DEFAULT_OLLAMA_LLM_CONFIG: Dict[str, Any] = {
     "temperature": 0.8,
@@ -27,6 +29,11 @@ class OllamaProvider(LLMProvider):
 
         self._debug_log("Model parameters::", *(f"- {k}: {v}" for k, v in parameters.items()))
 
+        callbacks = []
+        if self.config.get("enable_tracing", False):
+            tracer = LangChainTracer(project_name=os.getenv("LANGCHAIN_PROJECT", "chatterpy"))
+            callbacks.append(tracer)
+
         self.model = Ollama(
             model=model_name,
             base_url=base_url,
@@ -36,6 +43,7 @@ class OllamaProvider(LLMProvider):
             top_k=parameters["top_k"],
             repeat_penalty=parameters["repeat_penalty"],
             num_ctx=parameters["context_size"],
+            callbacks=callbacks,
         )
 
     def generate(self, messages: List[BaseMessage]) -> str:
