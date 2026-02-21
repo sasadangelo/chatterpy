@@ -1,50 +1,39 @@
-# Copyright (C) 2023 Salvatore D'Angelo
-# Maintainer: Salvatore D'Angelo <sasadangelo@gmail.com>
-#
-# This file is part of the ChatterPy project maintained by Salvatore D'Angelo.
-#
-# SPDX-License-Identifier: MIT
-from typing import Any, Dict
-from langchain.memory import ConversationBufferMemory, ConversationBufferWindowMemory, ConversationSummaryMemory
-from langchain.memory.chat_memory import BaseChatMemory
-from providers.provider_factory import LLMProviderFactory
-
-DEFAULT_CHAT_HISTORY_MEMORY = "buffer"
+# -----------------------------------------------------------------------------
+# Copyright (c) 2026 Salvatore D'Angelo, Code4Projects
+# Licensed under the MIT License. See LICENSE.md for details.
+# -----------------------------------------------------------------------------
+from core import chatterpy_config
+from memory.memory import (
+    BaseChatMemoryStrategy,
+    BufferMemoryStrategy,
+    SummaryMemoryStrategy,
+    WindowMemoryStrategy,
+)
+from protocols import LLMProtocol, LLMProtocolFactory
 
 
 class MemoryFactory:
     """
-    Factory to create chat memory instances based on configuration.
-    Supports types: buffer, window, summary.
+    Factory to decide which memory strategy to use based on configuration.
+    It returns an instance of a BaseChatMemoryStrategy.
     """
 
     @staticmethod
-    def get_memory(config: Dict[str, Any]) -> BaseChatMemory:
-        """
-        Returns an instance of BaseChatMemory based on the 'chat_history_memory' config.
+    def get_memory() -> BaseChatMemoryStrategy:
+        if chatterpy_config.memory.chat_history == "buffer":
+            return BufferMemoryStrategy()
+        if chatterpy_config.memory.chat_history == "window":
+            # Default window size of 10 if not specified
+            window_size: int = (
+                chatterpy_config.memory.chat_history_window
+                if chatterpy_config.memory.chat_history_window is not None
+                else 10
+            )
+            return WindowMemoryStrategy(window=window_size)
+        if chatterpy_config.memory.chat_history == "summary":
+            # The summary strategy needs an LLM protocol to perform the summarization
+            protocol: LLMProtocol = LLMProtocolFactory.get_protocol()
+            # Assuming provider.model (or the provider itself) follows your LLMProtocol
+            return SummaryMemoryStrategy(protocol=protocol)
 
-        Args:
-            config (dict): Configuration dictionary that may include:
-                - chat_history_memory: type of memory ('buffer', 'window', 'summary')
-                - chat_history_memory_window: window size for 'window' memory
-
-        Raises:
-            ValueError: if the memory type is unknown
-
-        Returns:
-            BaseChatMemory: instantiated memory object
-        """
-        memory_type = config.get("chat_history_memory", DEFAULT_CHAT_HISTORY_MEMORY)
-
-        if memory_type == "buffer":
-            return ConversationBufferMemory(return_messages=True)
-        elif memory_type == "window":
-            window_size = config.get("chat_history_memory_window", 5)
-            return ConversationBufferWindowMemory(k=window_size, return_messages=True)
-        elif memory_type == "summary":
-            provider = LLMProviderFactory.get_provider(config)
-            if not provider or not hasattr(provider, "model") or provider.model is None:
-                raise RuntimeError("LLM provider or model not initialized for summary memory.")
-            return ConversationSummaryMemory(llm=provider.model, return_messages=True)
-        else:
-            raise ValueError(f"Unknown memory type: {memory_type}")
+        raise ValueError(f"Unknown memory strategy type: {chatterpy_config.memory.chat_history}")

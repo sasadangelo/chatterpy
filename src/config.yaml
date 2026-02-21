@@ -1,0 +1,111 @@
+####################################################################################################
+# Ollama configuration parameters
+####################################################################################################
+protocol:
+  name: "ollama"
+  api_url: http://localhost:11434
+  model:
+    name: "llama3.1:latest"
+    parameters:
+      temperature: 0.9
+      max_tokens: 500
+      top_k: 40
+      top_p: 0.9
+      repeat_penalty: 1.1
+      context_size: 8192
+####################################################################################################
+# WatsonX configuration parameters
+####################################################################################################
+# protocol:
+#   name: "watsonx"
+#   api_url: "https://eu-de.ml.cloud.ibm.com"
+#   space_id: "dd2dd8ef-a711-4919-a61b-b6115becd96a"
+#   model:
+#     name: "ibm/granite-4-h-small"
+#     # Conversing with granite-13b-chat-v2 values suggested here:
+#     # https://dataplatform.cloud.ibm.com/docs/content/wsj/analyze-data/fm-models-ibm-chat.html?context=wx
+#     parameters:
+#       decoding_method: sample
+#       min_new_tokens: 1
+#       max_new_tokens: 500
+#       temperature: 0.2
+#       top_p: 0.9
+#       repeat_penalty: 1.05
+#       top_k: 40
+#       context_size: 8192
+####################################################################################################
+# OpenAI configuration parameters
+####################################################################################################
+# protocol:
+#   name: "openai"
+#   # You can use:
+#   # - https://api.openai.com/v1 for ChatGPT
+#   api_url: "http://localhost:11434/v1"
+#   model:
+#     # You can use:
+#     # - "gpt-3.5-turbo" for ChatGPT 3.5
+#     # - "gpt-4" for ChatGPT 4
+#     # - "instructlab/merlinite-7b-lab" for InstructLab and Merlinite model
+#     name: "llama3.1:latest"
+#     parameters:
+#       temperature: 1
+#       max_tokens: 500 # -1 Only works on ChatGPT
+#       top_p: 0.9
+#       repeat_penalty: 1.1
+
+####################################################################################################
+# System Message Prompt
+####################################################################################################
+system_message: |
+  You are a helpful, respectful and honest assistant. Always answer as helpfully as possible, while being safe.
+  Please ensure that your responses are socially unbiased and positive in nature.
+  If a question does not make any sense, or is not factually coherent, explain why instead of answering something not correct.
+  If you don't know the answer to a question, please don't share false information and say you don't know the answer.
+
+####################################################################################################
+# Chatterpy Logging
+####################################################################################################
+log:
+  level: "INFO"
+  console: false
+  file: "logs/chat.log"
+  rotation: "10 MB"
+  retention: "7 days"
+  compression: "zip"
+
+####################################################################################################
+# Memory Strategy
+####################################################################################################
+memory:
+  # possible values: buffer, window or summary
+  chat_history: buffer
+  # chat_history: buffer
+  # chat_history: window
+  # chat_history_window: 3 # only window
+
+####################################################################################################
+# Datawave CLI Logging
+####################################################################################################
+datawave_log:
+  level: "DEBUG"
+  console: false
+  file: "logs/datawave.log"
+  rotation: "10 MB"
+  retention: "7 days"
+  compression: "zip"
+
+####################################################################################################
+# RAG (Retrieval Augmented Generation) Configuration
+####################################################################################################
+rag:
+  enabled: false
+  top_k_chunks: 10
+  document_chunk_size: 100
+  document_chunk_overlap: 0
+  qdrant_path: ~/.qdrant
+  qdrant_collection: mycollection
+  embedding_protocol: "ollama"
+  embedding_model: "llama3.1:latest"
+  embedding_vector_size: 4096
+  # embedding_distance_function allowed values: Cosine, Euclid, Dot
+  embedding_distance_function: Cosine

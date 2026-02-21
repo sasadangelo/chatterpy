@@ -1,97 +1,67 @@
-# Copyright (C) 2023 Salvatore D'Angelo
-# Maintainer: Salvatore D'Angelo <sasadangelo@gmail.com>
-#
-# This file is part of the ChatterPy project maintained by Salvatore D'Angelo.
-#
-# SPDX-License-Identifier: MIT
-"""
-DataWeave CLI Application Module
-
-This module contains the main functionality for the DataWeave CLI application.
-It includes functions for loading configuration, processing data from various
-sources, and setting up the command-line interface.
-
-Functions:
-- load_config: Loads and returns configuration data from a YAML file.
-- main: Main entry point of the DataWeave command-line interface.
-
-Usage:
-This is the main application of the Datawaeve CLI. It is supposed you call
-it with this command:
-
-python3 datawaeve_app.py -c configg.yml
-"""
-
+# -----------------------------------------------------------------------------
+# Copyright (c) 2026 Salvatore D'Angelo, Code4Projects
+# Licensed under the MIT License. See LICENSE.md for details.
+# -----------------------------------------------------------------------------
 import argparse
-import yaml
-from typing import Dict
+import sys
+from argparse import ArgumentParser, Namespace
+
+from core import LoggerManager, chatterpy_config, setup_logging
 from datawaeve.datawaeve_cli import DataWeaveCLI
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
+
+# Initialize logging first
+setup_logging(
+    level=chatterpy_config.datawave_log.level,
+    console=chatterpy_config.datawave_log.console,
+    file=chatterpy_config.datawave_log.file,
+    rotation=chatterpy_config.datawave_log.rotation,
+    retention=chatterpy_config.datawave_log.retention,
+    compression=chatterpy_config.datawave_log.compression,
+)
+
+# Create a main logger
+logger = LoggerManager.get_logger(name="main")
 
 
-def load_config(config_file: str) -> Dict:
-    """
-    Load a YAML configuration file.
-
-    Args:
-        config_file (str): Path to the YAML configuration file.
-
-    Returns:
-        dict: Configuration data loaded from the file.
-    """
-    try:
-        with open(config_file, "r", encoding="utf-8") as f:
-            return yaml.safe_load(f)
-    except FileNotFoundError:
-        print(f"[ERROR] Config file not found: {config_file}")
-        exit(1)
-    except yaml.YAMLError as e:
-        print(f"[ERROR] Invalid YAML syntax: {e}")
-        exit(1)
-
-
-def main():
-    """
-    Main entry point of the DataWeave command-line interface.
-
-    This function sets up the argument parser for the DataWeave CLI and
-    defines the command-line arguments that can be used to populate a vector
-    database with data coming from different sources.
-    """
-    parser = argparse.ArgumentParser(
-        description=("DataWeave CLI: Populate a vector database with data coming from " "different sources.")
+# This is the main entry point of the DataWeave command-line interface.
+def main() -> None:
+    parser: ArgumentParser = argparse.ArgumentParser(
+        description="DataWeave CLI: Populate a vector database with data coming from different sources."
     )
-    parser.add_argument("--config", "-c", type=str, required=True, help="Path to the config file")
     parser.add_argument(
         "--pdf",
         type=str,
         action="append",
         required=False,
-        help=("Specify the path of a PDF file or a folder containing multiple " "PDF files."),
+        help="Specify the path of a PDF file or a folder containing multiple PDF files.",
     )
     parser.add_argument(
-        "--wikipedia",
-        type=str,
-        action="append",
-        required=False,
-        help="Specify the URL of a Wikipedia page.",
+        "--wikipedia", type=str, action="append", required=False, help="Specify the URL of a Wikipedia page."
     )
 
-    args = parser.parse_args()
+    args: Namespace = parser.parse_args()
 
-    # Load the configuration file
-    config = load_config(args.config)
-
+    # Check if at least one source is provided
     if not args.pdf and not args.wikipedia:
-        print("[INFO] No data sources provided. Use --pdf or --wikipedia.")
-        exit(0)
+        parser.print_help()
+        return
 
     # Load data from all the supported data sources
-    datawaeve_cli = DataWeaveCLI(config)
-    if args.pdf:
-        datawaeve_cli.load_pdf_sources(args.pdf)
-    if args.wikipedia:
-        datawaeve_cli.load_wikipedia_sources(args.wikipedia)
-    datawaeve_cli.process_sources()
+    try:
+        datawaeve_cli: DataWeaveCLI = DataWeaveCLI()
+        datawaeve_cli.load_pdf_sources(pdf_paths=args.pdf) if args.pdf else []
+        datawaeve_cli.load_wikipedia_sources(wikipedia_urls=args.wikipedia) if args.wikipedia else []
+        datawaeve_cli.process_sources()
+    except ConnectionError as e:
+        logger.error(f"Connection error: {e}")
+        sys.exit(1)
+    except Exception as e:
+        logger.error(f"An unexpected error occurred: {e}")
+        sys.exit(1)
 
 
 if __name__ == "__main__":

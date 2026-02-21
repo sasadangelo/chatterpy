@@ -1,41 +1,40 @@
-# Copyright (C) 2023 Salvatore D'Angelo
-# Maintainer: Salvatore D'Angelo <sasadangelo@gmail.com>
-#
-# This file is part of the ChatterPy project maintained by Salvatore D'Angelo.
-#
-# SPDX-License-Identifier: MIT
-from typing import Optional, List
+# -----------------------------------------------------------------------------
+# Copyright (c) 2026 Salvatore D'Angelo, Code4Projects
+# Licensed under the MIT License. See LICENSE.md for details.
+# -----------------------------------------------------------------------------
+from core import chatterpy_config
 from databases.qdrant_db import QdrantDatabase
-from embeddings.embedding_provider_factory import EmbeddingProviderFactory
-
-DEFAULT_RAG_ENABLED = False
+from embeddings import EmbeddingProtocol, EmbeddingProtocolFactory
 
 
 class RAG:
-    def __init__(self, config):
-        """
-        Initialize RAG subsystem.
-        If RAG is enabled in the config, initialize the Qdrant vector database.
-        """
-        self.config = config
-        # Convert rag_enabled config to boolean (accept string "true"/"false" or boolean)
-        raw_enabled = self.config.get("rag_enabled", DEFAULT_RAG_ENABLED)
-        self.rag_enabled: bool = (
-            str(raw_enabled).lower() == "true" if isinstance(raw_enabled, str) else bool(raw_enabled)
+    """
+    RAG (Retrieval Augmented Generation) handler.
+
+    Manages the retrieval of relevant context from the vector database
+    to augment LLM responses with domain-specific knowledge.
+    """
+
+    def __init__(self) -> None:
+        """Initialize RAG with configuration from config.yaml."""
+        self.rag_enabled: bool = chatterpy_config.rag.enabled
+        embedding_protocol: EmbeddingProtocol = EmbeddingProtocolFactory.get_embedding_protocol()
+        self.db: QdrantDatabase | None = (
+            QdrantDatabase(embeddings=embedding_protocol.embeddings) if self.rag_enabled else None
         )
-        if self.rag_enabled:
-            embedding_provider = EmbeddingProviderFactory.get_embedding_provider(config)
-            self.db: Optional[QdrantDatabase] = QdrantDatabase(self.config, embedding_provider.embeddings)
-        else:
-            self.db = None
 
     def is_enabled(self) -> bool:
-        """
-        Returns True if RAG is enabled, False otherwise.
-        """
+        """Check if RAG is enabled."""
         return self.rag_enabled
 
-    def get_context(self, user_message: str) -> Optional[List[str]]:
-        if self.rag_enabled and self.db is not None:
-            return self.db.get_context(user_message)
-        return None
+    def get_context(self, user_message: str) -> list[str] | None:
+        """
+        Retrieve relevant context for a user message.
+
+        Args:
+            user_message: The user's question/message
+
+        Returns:
+            List of relevant text chunks or None if RAG is disabled or no results
+        """
+        return self.db.get_context(user_message) if self.rag_enabled and self.db else None
