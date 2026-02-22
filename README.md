@@ -45,16 +45,9 @@ git clone https://github.com/sasadangelo/chatterpy
 cd chatterpy
 ```
 
-2. Create a Python 3 virtual environment and activate it:
+2. Create a Python 3 virtual environment and install the dependencies:
 ```
-python3 -m venv venv
-source venv/bin/activate
-```
-
-3. Install the dependencies for ChatterPy and DataWaeve CLI:
-```
-pip3 install -r chatterpy_requirements.txt
-pip3 install -r datawaeve_requirements.txt
+uv sync --dev
 ```
 
 ## Configure ChatterPy
@@ -197,24 +190,21 @@ OPENAI_API_KEY="<your OpenAI API Key>"
 
 To ChatterPy in GUI mode run the following command:
 ```
-cd src
-streamlit run chatterpy_gui.py
+cd src && PYTHONPATH=. uv run streamlit run chatterpy_gui.py
 ```
 
 ### How to run the ChatterPy in Text mode
 
 To ChatterPy in Text mode run the following command:
 ```
-cd src
-python3 chatterpy_app.py -c config.yml
+cd src && PYTHONPATH=. uv run python3 chatterpy_app.py
 ```
 
 ### How to run the DataWaeve CLI
 
 To run the datawaeve cli type the following command:
 ```
-cd src
-python3 datawaeve_app.py -c config.yml [--pdf <pdf file name>] [--wikipedia <wikipedia url>]
+cd src && PYTHONPATH=. uv run python3 datawaeve_app.py [--pdf <pdf file name>] [--wikipedia <wikipedia url>]
 ```
 
 You can provide one or more PDF file or Wikipedia page. You can also provide a folder with one or more PDF file.
