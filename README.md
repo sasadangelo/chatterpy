@@ -2,22 +2,22 @@
 
 ## What is ChatterPy?
 
-ChatterPy is a multi-model and multi-provider chatbot with Retrieval-Augmented Generation (RAG) written in Python and LangChain. It is an evolution of my [ChatPDF](https://github.com/sasadangelo/chatpdf) project and consists of two main components:
+ChatterPy is a multi-providers, multi-protocols, and multi-model chatbot with Retrieval-Augmented Generation (RAG) written in Python and LangChain. It is an evolution of my [ChatPDF](https://github.com/sasadangelo/chatpdf) project and consists of two main components:
 
 * **ChatterPy**: The actual chatbot.
 * **DataWaeve CLI**: A command-line interface for scraping data from various sources (e.g., PDFs, Wikipedia) and storing it in a vector store.
 
-ChatterPy can be run in text or GUI mode, while DataWaeve CLI is available only in text mode. ChatterPy uses a configuration file to set up the provider (e.g., OpenAI, Ollama, LLamaCPP), the model (e.g., LLama3, GPT, LLama2), and more.
+ChatterPy can be run in text or GUI mode, while DataWaeve CLI is available only in text mode. ChatterPy uses a configuration file to set up the provider (e.g., OpenAI, Ollama, WatsonX), the model (e.g., LLama3, GPT, LLama2), and more.
 
 ## Prerequisites
 
-ChatterPy is a multi-provider and multi-model chatbot, so the prerequisites depend on the provider or model you choose to activate. By default, ChatterPy uses the Ollama provider with the LLama3 model. To get started, install the Ollama CLI on your machine by downloading it from [here](https://github.com/ollama/ollama). After installation, you can start the ollama server with the command:
+ChatterPy is a multi-providers, multi-protocols, and multi-model chatbot, so the prerequisites depend on the provider or model you choose to activate. By default, ChatterPy uses the Ollama provider and protocol with the LLama3.1 model. To get started, install the Ollama CLI on your machine by downloading it from [here](https://github.com/ollama/ollama). After installation, you can start the ollama server with the command:
 ```
 ollama serve
 ```
 
 In another terminal:
-- you should download the LLM **llama3** model in the `~/.ollama` folder:
+- you should download the LLM **llama3.1** model in the `~/.ollama` folder:
 ```
 ollama pull llama3
 ```
@@ -30,7 +30,6 @@ ollama list
 ChatterPy also supports the following providers:
 
 * **WatsonX**
-* **LLama.CPP**
 * **OpenAI** (ChatGPT or any server supporting the OpenAI standard, like Red Hat Instruct Lab or Python LLama.CPP)
 
 Additionally, you need Python 3 installed on your machine.
@@ -45,42 +44,60 @@ git clone https://github.com/sasadangelo/chatterpy
 cd chatterpy
 ```
 
+<<<<<<< HEAD
 2. Create a Python 3 virtual environment and install the dependencies:
+=======
+2. Create a Python 3 virtual environment and install dependencies with uv:
+>>>>>>> 061dc6dc681bd8c65d824581e19a14f89cbdb30e
 ```
 uv sync --dev
 ```
 
 ## Configure ChatterPy
 
-ChatterPy and Datawaeve CLI use the following [configuration file](https://github.com/sasadangelo/chatterpy/blob/main/src/config.yml). Below is a description of the fields:
+ChatterPy and Datawaeve CLI use the following [configuration file](https://github.com/sasadangelo/chatterpy/blob/main/src/config.yaml). Below is a description of the fields:
 
 ### Provider and Model Configuration
 
 These parameters configure the LLM provider (e.g., Ollama, LLamaCPP, WatsonX, OpenAI) and the model to use. The model name depends on the provider.
 ```
-provider="ollama"
-model="llama3"
+protocol:
+  name: "ollama"
+  api_url: http://localhost:11434
+  model:
+    name: "llama3.1:latest"
+    parameters:
+      ...
 ```
 
 ### Decoding Parameters
 
 Configure the decoding parameters of the model:
 ```
-parameters:
-  temperature: 0.8
-  max_tokens: 200
-  top_k: 40
-  top_p: 0.9
-  repeat_penalty: 1.1
-  context_size: 8192
+protocol:
+  ...
+    parameters:
+      temperature: 0.9
+      max_tokens: 500
+      top_k: 40
+      top_p: 0.9
+      repeat_penalty: 1.1
+      context_size: 8192
 ```
 
-### Prompt Formatter
+### Logging
 
-Choose the chat history format (currently, only Grafite on WatsonX requires a specific prompt format called "granite"; all others work with plain text):
+Configure the logging:
 ```
-prompt_formatter: plain
+log:
+  level: "INFO"
+  console: false
+  file: "logs/chat.log"
+  rotation: "10 MB"
+  retention: "7 days"
+  compression: "zip"
 ```
+
 
 ### System Message
 
@@ -97,46 +114,42 @@ system_message: |
 
 Choose the memory strategy: buffer, window, or summary. The `buffer` option allows the prompt to grow indefinitely, which can be problematic in the long term. The `window` strategy keeps only the last N messages in chat history, while the `summary` strategy creates a summary of the chat history.
 ```
-chat_history_memory: buffer
+memory:
+  # possible values: buffer, window or summary
+  chat_history: buffer
+  # chat_history: buffer
+  # chat_history: window
+  # chat_history_window: 3 # only window
+```
+### Datawaeve Logging
 
-# chat_history_memory: window
-# chat_history_memory_window: 3
-
-# chat_history_memory: summary
+Configure the Datawaeve logging:
+```
+datawave_log:
+  level: "DEBUG"
+  console: false
+  file: "logs/datawave.log"
+  rotation: "10 MB"
+  retention: "7 days"
+  compression: "zip"
 ```
 
 ### RAG Parameters
 
 These parameters activate and configure the Retrieval-Augmented Generation (RAG) component. ChatterPy currently supports LLama3 with the Ollama provider for embedding and Qdrant in local mode as the vector store:
 ```
-rag_enabled: false
-rag_top_k_chunks: 10
-
-qdrant_path: ~/.qdrant
-qdrant_collection: mycollection
-
-embedding_provider: "ollama"
-embedding_model: "llama3"
-embedding_vector_size: 4096
-# embedding_distance_function allowed values: Cosine, Euclid, Dot
-embedding_distance_function: Cosine
-```
-
-### DataWaeve CLI Parameters
-
-DataWaeve CLI parameters overlap with RAG parameters since both use the same vector store for data storage and retrieval:
-```
-document_chunk_size: 100
-document_chunk_overlap: 0
-
-qdrant_path: ~/.qdrant
-qdrant_collection: mycollection
-
-embedding_provider: "ollama"
-embedding_model: "llama3"
-embedding_vector_size: 4096
-# embedding_distance_function allowed values: Cosine, Euclid, Dot
-embedding_distance_function: Cosine
+rag:
+  enabled: false
+  top_k_chunks: 10
+  document_chunk_size: 100
+  document_chunk_overlap: 0
+  qdrant_path: ~/.qdrant
+  qdrant_collection: mycollection
+  embedding_protocol: "ollama"
+  embedding_model: "llama3.1:latest"
+  embedding_vector_size: 4096
+  # embedding_distance_function allowed values: Cosine, Euclid, Dot
+  embedding_distance_function: Cosine```
 ```
 
 ### Provider-Specific Parameters
@@ -156,13 +169,6 @@ base_url: http://localhost:11434
 Open AI requires these additional parameters:
 ```
 base_url: "http://localhost:8000/v1"
-```
-
-LLamaCPP requires these additional parameters:
-```
-transformers_path: "~/.cache/huggingface/transformers"
-model_path: "llama-2-7b-chat-gguf/llama-2-7b-chat.Q2_K.gguf"
-chat_format: "llama-2"
 ```
 
 ## Set UP the Environment Variables
