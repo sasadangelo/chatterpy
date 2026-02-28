@@ -44,11 +44,7 @@ git clone https://github.com/sasadangelo/chatterpy
 cd chatterpy
 ```
 
-<<<<<<< HEAD
-2. Create a Python 3 virtual environment and install the dependencies:
-=======
 2. Create a Python 3 virtual environment and install dependencies with uv:
->>>>>>> 061dc6dc681bd8c65d824581e19a14f89cbdb30e
 ```
 uv sync --dev
 ```
