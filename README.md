@@ -81,4 +81,5 @@ You can provide one or more PDF file or Wikipedia page. You can also provide a f
 ## Video Demo
 
 This is the ChatterPy video demo.
+
 ![ChatterPy Demo](docs/media/chatterpy.gif)
