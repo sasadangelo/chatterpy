@@ -77,3 +77,9 @@ cd src && PYTHONPATH=. uv run python3 datawaeve_app.py [--pdf <pdf file name>] [
 ```
 
 You can provide one or more PDF file or Wikipedia page. You can also provide a folder with one or more PDF file.
+
+## Video Demo
+
+This is the ChatterPy video demo.
+
+![ChatterpyVideo Demo](docs/media/chatterpy.mp4)
