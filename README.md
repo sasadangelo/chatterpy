@@ -51,7 +51,7 @@ uv sync --dev
 
 ## Configure ChatterPy
 
-ChatterPy and Datawaeve CLI use the following [configuration file](https://github.com/sasadangelo/chatterpy/blob/main/src/config.yaml). Below is a description of the fields:
+See this document to understand [how to configure ChatterPy and Datawaeve CLI](docs/Configure.md).
 
 ### Provider and Model Configuration
 
