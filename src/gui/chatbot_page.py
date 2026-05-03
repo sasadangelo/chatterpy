@@ -8,6 +8,7 @@ import streamlit as st
 from chatbot.chatbot import ChatBOT
 from gui.page import Page
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage
+from streamlit.delta_generator import DeltaGenerator
 
 
 # This class is responsible for displaying the ChatBOT page using Streamlit.
@@ -19,14 +20,8 @@ class ChatBotPage(Page):
         # Initialize the conversation.
         self.__init_messages()
 
-        # Supervise user input
-        if user_input := st.chat_input("Input your question!"):
-            with st.spinner(text="ChatterPy is typing ..."):
-                chatbot: ChatBOT = cast(ChatBOT, st.session_state.chatbot)
-                _ = chatbot.get_answer(question=user_input)
-
-        # Display chat history
-        chatbot = cast(ChatBOT, st.session_state.chatbot)
+        # Display chat history first
+        chatbot: ChatBOT = cast(ChatBOT, st.session_state.chatbot)
         messages: list[BaseMessage] = chatbot.get_messages()
         for message in messages:
             if isinstance(message, AIMessage):
@@ -35,6 +30,29 @@ class ChatBotPage(Page):
             elif isinstance(message, HumanMessage):
                 with st.chat_message(name="user"):
                     st.markdown(body=message.content)
+
+        # Supervise user input
+        if user_input := st.chat_input("Input your question!"):
+            # Display user message immediately
+            with st.chat_message(name="user"):
+                st.markdown(body=user_input)
+
+            # Display assistant response with streaming
+            with st.chat_message(name="assistant"):
+                message_placeholder: DeltaGenerator = st.empty()
+                full_response = ""
+
+                # Stream the response (the spinner is not needed with streaming)
+                for chunk in chatbot.get_answer(question=user_input):
+                    if chunk.content:
+                        # Handle content as string
+                        content = chunk.content if isinstance(chunk.content, str) else str(chunk.content)
+                        full_response += content
+                        # Show cursor while streaming
+                        message_placeholder.markdown(body=full_response + "▌")
+
+                # Display final response without cursor
+                message_placeholder.markdown(body=full_response)
 
     # Initialize the ChatBOT page
     def __init_page(self) -> None:

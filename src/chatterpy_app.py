@@ -45,15 +45,21 @@ def main() -> None:
             # Log user message
             logger.info(f"user> {user_message}")
 
-            # Generate the chatbot's response
-            response: str = chatbot.get_answer(question=user_message)
+            # Generate and print the chatbot's response in streaming mode
+            print("")
+            print("assistant> ", end="", flush=True)
+
+            response_parts: list[str] = []
+            for chunk in chatbot.get_answer(question=user_message):
+                chunk_text: str = chunk.text
+                print(chunk_text, end="", flush=True)
+                response_parts.append(chunk_text)
+
+            response: str = "".join(response_parts)
+            print("")
 
             # Log AI response
             logger.info(f"assistant> {response}")
-
-            # Print the chatbot's response
-            print("")
-            print("assistant>", response)
 
     except EOFError:
         # Terminate the conversation

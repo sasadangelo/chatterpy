@@ -18,8 +18,9 @@ protocol:
 ####################################################################################################
 # protocol:
 #   name: "watsonx"
-#   api_url: "https://eu-de.ml.cloud.ibm.com"
-#   space_id: "dd2dd8ef-a711-4919-a61b-b6115becd96a"
+#   api_url: "https://us-south.ml.cloud.ibm.com"
+#   project_id: "f42f449c-5d11-4b1c-bb34-d1cd22b6f128"
+#   # project_id: "dd2dd8ef-a711-4919-a61b-b6115becd96a" # Rome Team's account
 #   model:
 #     name: "ibm/granite-4-h-small"
 #     # Conversing with granite-13b-chat-v2 values suggested here:

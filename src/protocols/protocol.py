@@ -3,9 +3,10 @@
 # Licensed under the MIT License. See LICENSE.md for details.
 # -----------------------------------------------------------------------------
 from abc import ABC, abstractmethod
+from collections.abc import Iterator
 
 from langchain_core.language_models.base import LanguageModelInput
-from langchain_core.messages import AIMessage
+from langchain_core.messages import AIMessage, AIMessageChunk
 
 
 class LLMProtocol(ABC):
@@ -20,4 +21,9 @@ class LLMProtocol(ABC):
     @abstractmethod
     def invoke(self, messages: LanguageModelInput) -> AIMessage:
         """Send a message to the LLM and return the AI response."""
+        pass
+
+    @abstractmethod
+    def stream(self, messages: LanguageModelInput) -> Iterator[AIMessageChunk]:
+        """Stream the LLM response chunk by chunk."""
         pass

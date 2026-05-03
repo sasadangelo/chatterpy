@@ -25,7 +25,7 @@ class ProtocolConfig(BaseModel):
     name: ProtocolName
     api_url: str
     model: ModelConfig
-    space_id: str | None = None  # only watsonx
+    project_id: str | None = None  # only watsonx
 
 
 class MemoryType(str, Enum):

@@ -19,7 +19,7 @@ ollama serve
 In another terminal:
 - you should download the LLM **llama3.1** model in the `~/.ollama` folder:
 ```
-ollama pull llama3
+ollama pull llama3.1
 ```
 
 - you can list the downloaded model using the commands:
@@ -29,6 +29,7 @@ ollama list
 
 ChatterPy also supports the following providers:
 
+* **Ollama**
 * **WatsonX**
 * **OpenAI** (ChatGPT or any server supporting the OpenAI standard, like Red Hat Instruct Lab or Python LLama.CPP)
 
@@ -66,7 +67,7 @@ cd src && PYTHONPATH=. uv run streamlit run chatterpy_gui.py
 
 To ChatterPy in Text mode run the following command:
 ```
-cd src && PYTHONPATH=. uv run python3 chatterpy_app.py
+uv run python3 chatterpy_app.py
 ```
 
 ### How to run the DataWaeve CLI
