@@ -82,7 +82,5 @@ You can provide one or more PDF file or Wikipedia page. You can also provide a f
 ## Video Demo
 
 This is the ChatterPy video demo.
-<video width="600" controls>
-  <source src="docs/media/chatterpy.mp4" type="video/mp4">
-  Il tuo browser non supporta il tag video.
-</video>
+
+![ChatterPy Demo](docs/media/chatterpy.gif)
