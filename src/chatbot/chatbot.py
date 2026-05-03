@@ -4,7 +4,7 @@
 # -----------------------------------------------------------------------------
 from collections.abc import Iterator
 
-from chatbot.conversation import Conversation
+from chatbot.session_manager import SessionManager
 from core import LoggerManager, chatterpy_config
 from langchain_core.messages import AIMessage, AIMessageChunk, BaseMessage, HumanMessage, SystemMessage
 from protocols import LLMProtocol, LLMProtocolFactory
@@ -20,7 +20,8 @@ class ChatBOT:
         # Generate text using the model
         system_message: str = chatterpy_config.system_message
         self._logger.info(f"System Message: {system_message}")
-        self._conversation = Conversation(system_message=system_message)
+        # Create a session manager to handle multiple sessions
+        self._session_manager: SessionManager = SessionManager(system_message=system_message)
 
     # Once the user insert the question, this method is called to generate the answer.
     def get_answer(self, question: str) -> Iterator[AIMessageChunk]:
@@ -42,6 +43,11 @@ class ChatBOT:
         Returns:
             The AI's response as a string
         """
+        # Get the current session
+        current_session = self._session_manager.get_current_session()
+        if current_session is None:
+            raise RuntimeError("No active session available")
+
         # Retrieve context from RAG if enabled
         context: list[str] | None = self.rag.get_context(user_message=question) if self.rag.is_enabled() else None
 
@@ -53,12 +59,12 @@ class ChatBOT:
                 f"Use the following information to answer the user's question:\n\n"
                 f"{context_text}"
             )
-            self._conversation.add_message(message=SystemMessage(content=context_message))
+            current_session.conversation.add_message(message=SystemMessage(content=context_message))
 
         # Add the user's question as HumanMessage (clean, without context)
-        self._conversation.add_message(message=HumanMessage(content=question))
+        current_session.conversation.add_message(message=HumanMessage(content=question))
         # Get the messages to send to the LLM (processed by memory strategy)
-        messages_for_llm: list[BaseMessage] = self._conversation.get_messages_for_llm()
+        messages_for_llm: list[BaseMessage] = current_session.conversation.get_messages_for_llm()
         # Logging the messages to send to the LLM
         self._logger.debug("=" * 80)
         self._logger.debug(f"Chat History ({len(messages_for_llm)} messages sent to LLM):")
@@ -85,26 +91,93 @@ class ChatBOT:
                 additional_kwargs=ai_response_chunk.additional_kwargs,
                 response_metadata=ai_response_chunk.response_metadata,
             )
-            self._conversation.add_message(message=ai_message)
+            current_session.conversation.add_message(message=ai_message)
 
     def clear_conversation(self) -> None:
-        """Clear the conversation history."""
-        self._conversation.clear_history()
+        """Clear the conversation history of the current session."""
+        current_session = self._session_manager.get_current_session()
+        if current_session is not None:
+            current_session.conversation.clear_history()
 
     def get_message_count(self) -> int:
         """
-        Get the number of messages in the conversation.
+        Get the number of messages in the current session's conversation.
 
         Returns:
             The count of messages in the conversation history
         """
-        return self._conversation.get_message_count()
+        current_session = self._session_manager.get_current_session()
+        return current_session.conversation.get_message_count() if current_session else 0
 
     def get_messages(self) -> list[BaseMessage]:
         """
-        Get the messages in the conversation.
+        Get the messages in the current session's conversation.
 
         Returns:
-            The count of messages in the conversation history
+            The list of messages in the conversation history
         """
-        return self._conversation.get_full_history()
+        current_session = self._session_manager.get_current_session()
+        return current_session.conversation.get_full_history() if current_session else []
+
+    def get_session_id(self) -> str | None:
+        """
+        Get the current session ID.
+
+        Returns:
+            The unique session identifier or None if no session is active
+        """
+        return self._session_manager.get_current_session_id()
+
+    def create_session(self) -> str:
+        """
+        Create a new session and switch to it.
+
+        Returns:
+            The ID of the newly created session
+        """
+        session = self._session_manager.create_session()
+        self._session_manager.switch_session(session.session_id)
+        self._logger.info(f"Created and switched to new session: {session.session_id}")
+        return session.session_id
+
+    def delete_session(self, session_id: str) -> bool:
+        """
+        Delete a session by its ID.
+
+        Args:
+            session_id: The ID of the session to delete
+
+        Returns:
+            True if the session was deleted, False otherwise
+        """
+        return self._session_manager.delete_session(session_id)
+
+    def switch_session(self, session_id: str) -> bool:
+        """
+        Switch to a different session.
+
+        Args:
+            session_id: The ID of the session to switch to
+
+        Returns:
+            True if the switch was successful, False otherwise
+        """
+        return self._session_manager.switch_session(session_id)
+
+    def list_sessions(self) -> list[str]:
+        """
+        Get a list of all session IDs.
+
+        Returns:
+            A list of session IDs
+        """
+        return self._session_manager.list_sessions()
+
+    def get_session_count(self) -> int:
+        """
+        Get the number of sessions.
+
+        Returns:
+            The count of sessions
+        """
+        return self._session_manager.get_session_count()
