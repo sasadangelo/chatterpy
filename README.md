@@ -60,21 +60,21 @@ See this document to understand [how to configure ChatterPy and Datawaeve CLI](d
 
 To ChatterPy in GUI mode run the following command:
 ```
-cd src && PYTHONPATH=. uv run streamlit run chatterpy_gui.py
+cd src && uv run streamlit run chatterpy_gui.py
 ```
 
 ### How to run the ChatterPy in Text mode
 
 To ChatterPy in Text mode run the following command:
 ```
-uv run python3 chatterpy_app.py
+cd src && uv run python3 chatterpy_app.py
 ```
 
 ### How to run the DataWaeve CLI
 
 To run the datawaeve cli type the following command:
 ```
-cd src && PYTHONPATH=. uv run python3 datawaeve_app.py [--pdf <pdf file name>] [--wikipedia <wikipedia url>]
+cd src && uv run python3 datawaeve_app.py [--pdf <pdf file name>] [--wikipedia <wikipedia url>]
 ```
 
 You can provide one or more PDF file or Wikipedia page. You can also provide a folder with one or more PDF file.
@@ -82,5 +82,7 @@ You can provide one or more PDF file or Wikipedia page. You can also provide a f
 ## Video Demo
 
 This is the ChatterPy video demo.
-
-![ChatterPy Demo](docs/media/chatterpy.gif)
+<video width="600" controls>
+  <source src="docs/media/chatterpy.mp4" type="video/mp4">
+  Il tuo browser non supporta il tag video.
+</video>
